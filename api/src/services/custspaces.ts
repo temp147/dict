@@ -19,7 +19,7 @@ import { SettingsService } from './settings.js';
 
 const env = useEnv();
 
-export class CustSpace extends ItemsService {
+export class CustSpacesService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
 		super('directus_custspaces', options);
 
@@ -238,7 +238,7 @@ export class CustSpace extends ItemsService {
 		const keys: PrimaryKey[] = [];
 
 		await this.knex.transaction(async (trx) => {
-			const service = new CustSpace({
+			const service = new CustSpacesService({
 				accountability: this.accountability,
 				knex: trx,
 				schema: this.schema,
@@ -436,7 +436,7 @@ export class CustSpace extends ItemsService {
 		}
 
 		// Allow unauthenticated update
-		const service = new CustSpace({
+		const service = new CustSpacesService({
 			knex: this.knex,
 			schema: this.schema,
 		});
@@ -513,7 +513,7 @@ export class CustSpace extends ItemsService {
 		}
 
 		// Allow unauthenticated update
-		const service = new CustSpace({
+		const service = new CustSpacesService({
 			knex: this.knex,
 			schema: this.schema,
 			accountability: {
