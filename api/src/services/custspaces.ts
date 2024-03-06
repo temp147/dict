@@ -21,7 +21,7 @@ const env = useEnv();
 
 export class CustSpacesService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
-		super('directus_custspaces', options);
+		super('custom_custspaces', options);
 
 		this.knex = options.knex || getDatabase();
 		this.accountability = options.accountability || null;
@@ -183,36 +183,36 @@ export class CustSpacesService extends ItemsService {
 		}
 	}
 
-	/**
-	 * Create a new user
-	 */
-	override async createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey> {
-		const result = await this.createMany([data], opts);
-		return result[0]!;
-	}
+	// /**
+	//  * Create a new user
+	//  */
+	// override async createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey> {
+	// 	const result = await this.createMany([data], opts);
+	// 	return result[0]!;
+	// }
 
 	/**
 	 * Create multiple new users
 	 */
-	override async createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
-		const emails = data['map']((payload) => payload['email']).filter((email) => email);
-		const passwords = data['map']((payload) => payload['password']).filter((password) => password);
+	// override async createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+	// 	const emails = data['map']((payload) => payload['email']).filter((email) => email);
+	// 	const passwords = data['map']((payload) => payload['password']).filter((password) => password);
 
-		try {
-			if (emails.length) {
-				this.validateEmail(emails);
-				await this.checkUniqueEmails(emails);
-			}
+	// 	try {
+	// 		if (emails.length) {
+	// 			this.validateEmail(emails);
+	// 			await this.checkUniqueEmails(emails);
+	// 		}
 
-			if (passwords.length) {
-				await this.checkPasswordPolicy(passwords);
-			}
-		} catch (err: any) {
-			(opts || (opts = {})).preMutationError = err;
-		}
+	// 		if (passwords.length) {
+	// 			await this.checkPasswordPolicy(passwords);
+	// 		}
+	// 	} catch (err: any) {
+	// 		(opts || (opts = {})).preMutationError = err;
+	// 	}
 
-		return await super.createMany(data, opts);
-	}
+	// 	return await super.createMany(data, opts);
+	// }
 
 	/**
 	 * Update many users by query

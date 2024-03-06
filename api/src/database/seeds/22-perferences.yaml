@@ -1,0 +1,16 @@
+table: nb_perferences
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  details:
+    type: string
+    nullable: true

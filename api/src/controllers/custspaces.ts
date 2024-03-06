@@ -2,7 +2,7 @@ import { isDirectusError } from '@directus/errors';
 // import type { Role } from '@directus/types';
 import express from 'express';
 import Joi from 'joi';
-import { ErrorCode, ForbiddenError, InvalidCredentialsError, InvalidPayloadError } from '@directus/errors';
+import { ErrorCode,InvalidCredentialsError, InvalidPayloadError } from '@directus/errors';
 import { respond } from '../middleware/respond.js';
 import useCollection from '../middleware/use-collection.js';
 import { validateBatch } from '../middleware/validate-batch.js';
@@ -14,7 +14,7 @@ import { sanitizeQuery } from '../utils/sanitize-query.js';
 
 const router = express.Router();
 
-router.use(useCollection('directus_custspaces'));
+router.use(useCollection('custom_custspaces'));
 
 router.post(
 	'/',

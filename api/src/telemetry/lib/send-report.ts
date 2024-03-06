@@ -18,6 +18,8 @@ export const sendReport = async (report: TelemetryReport) => {
 		headers['Authorization'] = env['TELEMETRY_AUTHORIZATION'];
 	}
 
+	JSON.stringify(report)
+
 	// const res = await fetch(url, {
 	// 	method: 'POST',
 	// 	body: JSON.stringify(report),

@@ -1,17 +1,15 @@
-table: custom_custspaces
+table: nb_courses
 
 columns:
   id:
     type: uuid
     primary: true
     nullable: false
-  name:
+  title:
     type: string
     length: 255
     nullable: false
   description:
     type: string
+    length: 255
     nullable: true
-  timestamp:
-    type: timestamp
-    default: $now

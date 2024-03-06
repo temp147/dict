@@ -1,0 +1,41 @@
+table: nb_conclusions
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  surveys:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_surveys
+      column: id
+  sas_score:
+    type: integer
+  sas_score2:
+    type: integer
+  sas_comment:
+    type: text
+  sas_comment2:
+    type: text
+  sas_suggestion:
+    type: text
+  pss_score:
+    type: integer
+  pss_scores2:
+    type: integer
+  pss_comment:
+    type: text
+  pss_comment2:
+    type: text
+  pss_suggestion:
+    type: text
+  count:
+    type: integer

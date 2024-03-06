@@ -1,0 +1,29 @@
+table: nb_members
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+    length: 255
+    nullable: false
+  code:
+    type: string
+    length: 255
+  description:
+    type: string
+    nullable: true
+  organizations:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_organizations
+      column: id
+  companies:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_companies
+      column: id

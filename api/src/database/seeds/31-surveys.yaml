@@ -1,4 +1,4 @@
-table: custom_custspaces
+table: nb_surveys
 
 columns:
   id:
@@ -12,6 +12,4 @@ columns:
   description:
     type: string
     nullable: true
-  timestamp:
-    type: timestamp
-    default: $now
+

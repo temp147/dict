@@ -1,10 +1,9 @@
-table: custom_custspaces
+table: nb_chats   #todo design
 
 columns:
   id:
-    type: uuid
+    increments: true
     primary: true
-    nullable: false
   name:
     type: string
     length: 255

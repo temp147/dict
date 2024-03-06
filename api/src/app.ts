@@ -41,6 +41,8 @@ import utilsRouter from './controllers/utils.js';
 import versionsRouter from './controllers/versions.js';
 import webhooksRouter from './controllers/webhooks.js';
 import custspacesRouter from './controllers/custspaces.js';
+import resourcesRouter from './controllers/resourses.js';
+import coursesRouter from './controllers/courses.js';
 import {
 	isInstalled,
 	validateDatabaseConnection,
@@ -273,7 +275,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/activity', activityRouter);
 	app.use('/assets', assetsRouter);
 	app.use('/collections', collectionsRouter);
-	app.use('/custspaces', custspacesRouter);
+	app.use('/items/custom_custspaces', custspacesRouter);
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
 	app.use('/fields', fieldsRouter);
@@ -298,6 +300,8 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/utils', utilsRouter);
 	app.use('/versions', versionsRouter);
 	app.use('/webhooks', webhooksRouter);
+	app.use('/resources', resourcesRouter);
+	app.use('/courses', coursesRouter);
 
 	// Register custom endpoints
 	await emitter.emitInit('routes.custom.before', { app });

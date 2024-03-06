@@ -1,4 +1,4 @@
-table: custom_custspaces
+table: nb_companies
 
 columns:
   id:
@@ -12,6 +12,8 @@ columns:
   description:
     type: string
     nullable: true
-  timestamp:
-    type: timestamp
-    default: $now
+  status:
+    type: string
+    length: 16
+    nullable: false
+    default: active

@@ -1,0 +1,67 @@
+table: nb_resources
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  type:
+    type: string # One of: 'book', 'video', 'article'
+    length: 255
+    nullable: false
+    default: book
+  description:
+    type: string
+    length: 255
+    nullable: true
+  subtitle:
+    type: string
+    length: 255
+    nullable: true
+  subtitle2:
+    type: string
+    length: 255
+    nullable: true
+  subcontext:
+    type: string
+    length: 255
+    nullable: true
+  subcontext2:
+    type: string
+    length: 255
+    nullable: true
+  author:
+    type: string
+    length: 255
+    nullable: true
+  speaker:
+    type: string
+    length: 255
+    nullable: true
+  readtime:
+    type: integer
+    unsigned: true
+  playtime:
+    type: integer
+    unsigned: true
+  wordcount:
+    type: integer
+    unsigned: true
+  linkage:
+    type: string
+    length: 255
+    nullable: true
+  cover:
+    type: string
+    length: 255
+    nullable: true
+  attachment:
+    type: string
+    length: 255
+    nullable: true
+  courses:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_courses
+      column: id

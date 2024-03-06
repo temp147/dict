@@ -1,0 +1,25 @@
+table: nb_diaries
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  type:       # One of: 'emotion', 'sleep', 'pressure'
+    type: string
+    length: 255
+    nullable: false
+    default: emotion
+  emotion:
+    type: string
+    length: 255
+    nullable: false
+  logtime:
+    type: timestamp
+    default: $now
