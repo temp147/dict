@@ -1,0 +1,29 @@
+table: nb_usermoods
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+    length: 255
+    nullable: false
+  mood:
+    type: string
+    length: 255
+    nullable: false
+  moodcode:
+    type: integer
+  mooddate:
+    type: timestamp
+    default: $now
+  moodweekday:
+    type: string # one of the Sun Mon Tue Wed Thu Fri Sat
+  userid:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+

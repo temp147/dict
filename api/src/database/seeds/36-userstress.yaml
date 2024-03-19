@@ -1,0 +1,24 @@
+table: nb_userstress
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  stresslevel:
+    type: integer
+  stresssource:
+    type: string
+    length: 255
+  stressdate:
+    type: timestamp
+    default: $now
+  stressweekday:
+    type: string # one of the Sun Mon Tue Wed Thu Fri Sat
+  userid:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+

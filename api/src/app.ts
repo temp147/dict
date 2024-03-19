@@ -40,9 +40,18 @@ import usersRouter from './controllers/users.js';
 import utilsRouter from './controllers/utils.js';
 import versionsRouter from './controllers/versions.js';
 import webhooksRouter from './controllers/webhooks.js';
+//Following is the customer router lists
 import custspacesRouter from './controllers/custspaces.js';
-import resourcesRouter from './controllers/resourses.js';
+import companiesRouter from './controllers/companies.js';
 import coursesRouter from './controllers/courses.js';
+import membersRouter from './controllers/members.js';
+import organizationsRouter from './controllers/organizations.js';
+import qustionnairesRouter from './controllers/qustionnaires.js';
+import usermoodssRouter from './controllers/usermoods.js';
+import userstressRouter from './controllers/userstress.js';
+import resourcesRouter from './controllers/resourses.js';
+import surveysRouter from './controllers/surveys.js';
+
 import {
 	isInstalled,
 	validateDatabaseConnection,
@@ -275,7 +284,18 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/activity', activityRouter);
 	app.use('/assets', assetsRouter);
 	app.use('/collections', collectionsRouter);
+	// Following is the customer collection router lists.
 	app.use('/items/custom_custspaces', custspacesRouter);
+	app.use('/items/nb_companies', companiesRouter);
+	app.use('/items/nb_courses', coursesRouter);
+	app.use('/items/nb_members', membersRouter);
+	app.use('/items/nb_organizations', organizationsRouter);
+	app.use('/items/nb_qustionnaires', qustionnairesRouter);
+	app.use('/items/nb_resources', resourcesRouter);
+	app.use('/items/nb_surveys', surveysRouter);
+	app.use('/items/nb_usermoods', usermoodssRouter);
+	app.use('/items/nb_usermoods', userstressRouter);
+
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
 	app.use('/fields', fieldsRouter);

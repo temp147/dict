@@ -1,9 +1,13 @@
 table: nb_resources
 
 columns:
-  id:
+  keyid:
     type: uuid
     primary: true
+    nullable: false
+  name:
+    type: string
+    length: 255
     nullable: false
   type:
     type: string # One of: 'book', 'video', 'article'
@@ -18,18 +22,18 @@ columns:
     type: string
     length: 255
     nullable: true
-  subtitle2:
-    type: string
-    length: 255
-    nullable: true
+  # subtitle2:
+  #   type: string
+  #   length: 255
+  #   nullable: true
   subcontext:
     type: string
     length: 255
     nullable: true
-  subcontext2:
-    type: string
-    length: 255
-    nullable: true
+  # subcontext2:
+  #   type: string
+  #   length: 255
+  #   nullable: true
   author:
     type: string
     length: 255
@@ -41,7 +45,7 @@ columns:
   readtime:
     type: integer
     unsigned: true
-  playtime:
+  duration:
     type: integer
     unsigned: true
   wordcount:
@@ -51,7 +55,7 @@ columns:
     type: string
     length: 255
     nullable: true
-  cover:
+  coverurl:
     type: string
     length: 255
     nullable: true
@@ -59,6 +63,8 @@ columns:
     type: string
     length: 255
     nullable: true
+  lastupdate:
+    type: timestamp
   courses:
     type: uuid
     nullable: false
