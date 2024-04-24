@@ -51,6 +51,9 @@ import usermoodssRouter from './controllers/usermoods.js';
 import userstressRouter from './controllers/userstress.js';
 import resourcesRouter from './controllers/resourses.js';
 import surveysRouter from './controllers/surveys.js';
+import chatsRouter from './controllers/chats.js';
+import agentsRouter from './controllers/agents.js';
+import serversRouter from './controllers/servers.js';
 
 import {
 	isInstalled,
@@ -322,6 +325,9 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/webhooks', webhooksRouter);
 	app.use('/resources', resourcesRouter);
 	app.use('/courses', coursesRouter);
+	app.use('/chats', chatsRouter);
+	app.use('/agents', agentsRouter);
+	app.use('/servers', serversRouter);
 
 	// Register custom endpoints
 	await emitter.emitInit('routes.custom.before', { app });
