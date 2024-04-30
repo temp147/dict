@@ -15,6 +15,22 @@ const router = express.Router();
 router.use(useCollection('nb_agents'));
 
 router.post(
+	'/prediction/:pk',
+	asyncHandler(async(req, res, next) => {
+		const service = new AgentsService({
+			accountability: req.accountability,
+			schema: req.schema
+		});
+
+		// const record = await service.sendChats(req.params['pk']!, req.body);
+		service.sendChats(req.params['pk']!, req.body);
+		res.locals['payload'] = {data:'ok'};
+		return next()
+	}),
+	respond,
+)
+
+router.post(
 	'/',
 	asyncHandler(async (req, res, next) => {
 		const service = new AgentsService({

@@ -9,12 +9,15 @@ columns:
     type: string
     length: 255
     nullable: false
-  address:
+  url:
+    type: string
+    nullable: false
+  type:  # One of: 'flowise', 'others',
     type: string
     nullable: false
   apikey:
     type: string
     nullable: true
-  apikey:
+  apisecret:
     type: string
     nullable: true
