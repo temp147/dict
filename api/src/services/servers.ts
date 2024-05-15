@@ -2,6 +2,8 @@ import type { PrimaryKey } from '@directus/types';
 import getDatabase from '../database/index.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
+import { URL } from 'node:url';
+// import type { Url } from '../utils/url.js';
 
 
 
@@ -24,16 +26,20 @@ export class ServersService extends ItemsService {
 			.whereRaw(`LOWER(??) = ?`, ['uuid', key]);
 	}
 
-	async gerateQuery(key: PrimaryKey, data: Record<string, any>, ){
-
+	// async gerateS(key: PrimaryKey, data: Record<string, any>,
+	async gerateUrl(key: PrimaryKey,
+		): Promise<{url: URL ; apikey: string, apisecret:string}|undefined > {
 
 		const aiServer = await this.getServerByKey(key);
 
 		if( aiServer?.type === 'flowise'){
-			// todo add flowise structure.
-			return 'a'
+			const url = new URL('/api/v1/prediction/', aiServer.url);
+			const apikey = aiServer.apikey
+			const apisecret = aiServer.apisecret
+			return {url, apikey, apisecret};
 		}
-
-		return key
+		else{
+			return ;
+		}
 	}
 }
