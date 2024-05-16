@@ -4,7 +4,7 @@ import { ItemsService } from './items.js';
 import { ServersService } from './servers.js';
 import { ChatsService } from './chats.js';
 import { isEmpty } from 'lodash-es';
-
+import type { PrimaryKey } from '@directus/types';
 
 export class AgentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -15,16 +15,26 @@ export class AgentsService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async sendChats(chatId: string ,data: Partial<Item>[], opts?: MutationOptions): Promise<void> {
+	private async getServerByKey(key: PrimaryKey,
+		):Promise<{ servers: PrimaryKey }>{
+			return await this.knex
+				.select('servers')
+				.from('nb_agents')
+				.whereRaw(`LOWER(??) = ?`, ['uuid', key]);
+	};
+
+	async sendChats(flowId: string ,data: Partial<Item>[], opts?: MutationOptions): Promise<void> {
 		const serversService = new ServersService({
 			schema: this.schema,
 			accountability: this.accountability,
 		});
 
-		const servers =await serversService.gerateUrl(chatId)
+		const agentServer = await this.getServerByKey(flowId);
+
+		const servers =await serversService.gerateUrl(agentServer?.servers);
 
 		if(isEmpty(servers)){
-			return
+			return ;
 		}else{
 			const headers: HeadersInit = {
 				'Content-Type': 'application/json',
@@ -43,8 +53,10 @@ export class AgentsService extends ItemsService {
 				accountability: this.accountability,
 			});
 
-			return
-			// const keys = await chatsService.createOne(res.body)
+			if(res.body){
+				await chatsService.createOne(res.body)
+				return ;
+			}
 
 		}
 
