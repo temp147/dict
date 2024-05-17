@@ -46,7 +46,7 @@ import companiesRouter from './controllers/companies.js';
 import coursesRouter from './controllers/courses.js';
 import membersRouter from './controllers/members.js';
 import organizationsRouter from './controllers/organizations.js';
-import qustionnairesRouter from './controllers/qustionnaires.js';
+// import qustionnairesRouter from './controllers/qustionnaires.js';
 import usermoodssRouter from './controllers/usermoods.js';
 import userstressRouter from './controllers/userstress.js';
 import resourcesRouter from './controllers/resourses.js';
@@ -293,7 +293,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_courses', coursesRouter);
 	app.use('/items/nb_members', membersRouter);
 	app.use('/items/nb_organizations', organizationsRouter);
-	app.use('/items/nb_qustionnaires', qustionnairesRouter);
+	// app.use('/items/nb_qustionnaires', qustionnairesRouter);
 	app.use('/items/nb_resources', resourcesRouter);
 	app.use('/items/nb_surveys', surveysRouter);
 	app.use('/items/nb_usermoods', usermoodssRouter);
