@@ -1,0 +1,18 @@
+table: nb_supervisors
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+  function_point:
+    type: string
+    nullable: false
+  agents:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_agents
+      column: id

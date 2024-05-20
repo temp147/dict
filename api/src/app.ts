@@ -46,7 +46,7 @@ import companiesRouter from './controllers/companies.js';
 import coursesRouter from './controllers/courses.js';
 import membersRouter from './controllers/members.js';
 import organizationsRouter from './controllers/organizations.js';
-// import qustionnairesRouter from './controllers/qustionnaires.js';
+import supervisorsRouter from './controllers/supervisors.js';
 import usermoodssRouter from './controllers/usermoods.js';
 import userstressRouter from './controllers/userstress.js';
 import resourcesRouter from './controllers/resourses.js';
@@ -328,6 +328,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/chats', chatsRouter);
 	app.use('/agents', agentsRouter);
 	app.use('/servers', serversRouter);
+	app.use('/supervisors', supervisorsRouter);
 
 	// Register custom endpoints
 	await emitter.emitInit('routes.custom.before', { app });
