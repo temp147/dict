@@ -24,14 +24,20 @@ export class WechatService{
 		this.schema = opts.schema;
 		this.accountability = opts.accountability || null;
 		this.knex = opts?.knex || getDatabase();
+
+		if (env['WECHAT_AUTH']) {
+				if (!env['WECHAT_APPKEY']||!env['WECHAT_APPSECRET']) {
+					logger.warn(`WECHAT APPKEY is not set.`);
+			}
+		}
 	}
 
 	async getAccessToken(){
 		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
-		'grant_type=client_credential&appid="appid"&secret="appsecret"');
+		'grant_type=client_credential&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']);
 
-		// const eventuallySccessToken = '';
-		// const accessToken='';
+		let eventuallySccessToken = '';
+		// let accessToken='';
 		//nb_accessToken为表
 		const sqlAccessToken = await this.knex('nb_accessToken').select('*').first();
 
@@ -48,14 +54,15 @@ export class WechatService{
 
 				if(accessToken){
 					await this.knex('nb_accessToken').update({access_token: accessToken}).where('id', sqlAccessToken.id)
-					const eventuallySccessToken = accessToken
+					eventuallySccessToken = accessToken
 				}else{
 					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 				}
 
-				return
+				return eventuallySccessToken
 			}else{
-				const eventuallySccessToken = sqlAccessToken.access_token
+				eventuallySccessToken = sqlAccessToken.access_token
+				return eventuallySccessToken
 			}
 		}else{
 			//
@@ -64,12 +71,12 @@ export class WechatService{
 
 			if (accessToken) {
 				await this.knex('wx_accessToken').insert({access_token: accessToken}) ;
-				const eventuallySccessToken = accessToken
+				eventuallySccessToken = accessToken
 			} else {
 				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 			 }
 
-			 return
+			 return  eventuallySccessToken
 		}
 	};
 
@@ -85,7 +92,7 @@ export class WechatService{
 	if (!res.ok) {
 		throw new Error(`[${res.status}] ${await res.text()}`);
 	} else{
-		const accessToken = res.body
+		const accessToken = JSON.stringify(res.body)
 		return accessToken
 	}
 

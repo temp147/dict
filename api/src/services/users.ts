@@ -16,6 +16,8 @@ import { Url } from '../utils/url.js';
 import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
+import { WechatService } from './wechatapp/index.js';
+
 
 const env = useEnv();
 
@@ -443,6 +445,41 @@ export class UsersService extends ItemsService {
 
 		await service.updateOne(user.id, { password, status: 'active' });
 	}
+
+	async wxLogin(code: string): Promise<void>{
+		const wechatService = new WechatService({
+			schema: this.schema,
+			knex: this.knex,
+			accountability: this.accountability,
+		})
+
+		const wxToken = wechatService.getAccessToken();
+
+		//todo get openid
+
+		const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+		const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+
+	}
+
+	async wxGetUserInfo(code: string): Promise<void>{
+
+		// Todo insert
+		const wechatService = new WechatService({
+			schema: this.schema,
+			knex: this.knex,
+			accountability: this.accountability,
+		})
+
+		const wxToken = wechatService.getAccessToken();
+
+		//todo get openid
+
+		const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+		const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+
+	}
+
 
 	async requestPasswordReset(email: string, url: string | null, subject?: string | null): Promise<void> {
 		const STALL_TIME = 500;
