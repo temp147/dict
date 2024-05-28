@@ -14,6 +14,16 @@ import type { AbstractServiceOptions } from '../../types/index.js';
 const env = useEnv();
 const logger = useLogger();
 
+// interface wxjscode {
+// 	openid: string,
+// 	session_key: string,
+// 	unionid: string,
+// 	errcode: string,
+// 	errmsg: string,
+
+
+// };
+
 export class WechatService{
 
 	schema: SchemaOverview;
@@ -80,22 +90,49 @@ export class WechatService{
 		}
 	};
 
+			//获取用户的UUID
+	async jscode2session(jscode: string): Promise<any>{
+		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?' +
+		'grant_type=authorization_code&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']+'&js_code='+jscode);
 
-	async  getHttpOption (url:URL) {
+		try {
+			const res = await fetch(url, {
+				method: 'GET'
+			})
+
+			if(!res.ok){
+				throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
+				const resJson = res.json
+
+				return resJson
+			}
+		} catch (error: any) {
+			logger.error(error);
+			return null
+
+		}
+
+	}
+
+
+	async getHttpOption (url:URL) {
 
 		const res = await fetch(url, {
-		method: 'GET',
-		// body: JSON.stringify(report),
-		// headers,
-	});
+			method: 'GET',
+			// body: JSON.stringify(report),
+			// headers,
+		});
 
-	if (!res.ok) {
-		throw new Error(`[${res.status}] ${await res.text()}`);
-	} else{
-		const accessToken = JSON.stringify(res.body)
-		return accessToken
+		if (!res.ok) {
+			throw new Error(`[${res.status}] ${await res.text()}`);
+		} else{
+			const accessToken = JSON.stringify(res.body)
+			return accessToken
+		}
+
 	}
 
-	}
+
 
 }
