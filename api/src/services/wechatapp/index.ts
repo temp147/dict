@@ -7,20 +7,26 @@ import { useEnv } from '../../env.js';
 import { useLogger } from '../../logger.js';
 // import getMailer from '../../mailer.js';
 import type { AbstractServiceOptions } from '../../types/index.js';
+// import  CryptoJS from 'crypto-js'
 // import { Url } from '../../utils/url.js';
-// import { aw } from 'vitest/dist/reporters-O4LBziQ_.js';
 
 
 const env = useEnv();
 const logger = useLogger();
 
-// interface wxjscode {
+// // 定义接口来表示HTTP响应
+// interface HttpResponse<T> {
+// 	status: number;
+// 	message: string;
+// 	data: T;
+//   }
+
+// interface WxSession {
 // 	openid: string,
 // 	session_key: string,
 // 	unionid: string,
 // 	errcode: string,
 // 	errmsg: string,
-
 
 // };
 
@@ -91,7 +97,7 @@ export class WechatService{
 	};
 
 			//获取用户的UUID
-	async jscode2session(jscode: string): Promise<any>{
+	async jscode2session(jscode: string): Promise<Response  | undefined>{
 		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?' +
 		'grant_type=authorization_code&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']+'&js_code='+jscode);
 
@@ -103,20 +109,69 @@ export class WechatService{
 			if(!res.ok){
 				throw new Error(`[${res.status}] ${await res.text()}`)
 			}else{
-				const resJson = res.json
-
-				return resJson
+				return res
 			}
 		} catch (error: any) {
 			logger.error(error);
-			return null
+			return undefined
 
 		}
 
 	}
 
+	// async getUserInfo(jscode: string): Promise<any> {
+	// 	const url = new URL('');
+	// 	try {
+	// 		const resSession = await this.jscode2session(jscode)
 
-	async getHttpOption (url:URL) {
+	// 		if(resSession['code'] ){
+	// 			const res = await fetch(url, {
+	// 				method: 'GET'
+	// 			})
+
+	// 			if(!res.ok){
+	// 				throw new Error(`[${res.status}] ${await res.text()}`)
+	// 			}else{
+
+	// 			}
+
+	// 	}
+
+	// }    catch(error: any){
+	// 	logger.error(error);
+	// 	return undefined
+	// }
+
+
+
+	// private decryptData(wxEncryptedData: string, wxIv :string, wxSessionKey:string ) {
+	// 	// base64 decode
+	// 	const sessionKey = Buffer.from(wxSessionKey, 'base64').toString;
+	// 	const encryptedData = Buffer.from(wxEncryptedData, 'base64').toString;
+	// 	const iv = Buffer.from(wxIv, 'base64')
+	// 	try {
+    //  // 解密码
+	// 		var decipher = CryptoJS.createDecipheriv('aes-128-cbc', sessionKey, iv)
+    // // 设置自动 padding 为 true，删除填充补位
+    // 		decipher.setAutoPadding(true)
+    // 		var decoded = decipher.update(encryptedData, 'binary', 'utf8')
+    // 		decoded += decipher.final('utf8')
+
+    // 		decoded = JSON.parse(decoded)
+
+  	// 	} catch (err) {
+    // 			throw new Error('Illegal Buffer')
+ 	// 		}
+
+  	// 	if (decoded.watermark.appid !== this.appId) {
+    // 			throw new Error('Illegal Buffer')
+  	// 	}
+
+  	// 	return decoded
+	// }
+
+
+	private async getHttpOption (url:URL) {
 
 		const res = await fetch(url, {
 			method: 'GET',
@@ -136,3 +191,34 @@ export class WechatService{
 
 
 }
+
+
+// import CryptoJS from 'crypto-js';
+
+// function decryptData(sessionKey: string, encryptedData: string, iv: string): string {
+//     let sessionKeyBuffer = Buffer.from(sessionKey, 'base64');
+//     let encryptedDataBuffer = Buffer.from(encryptedData, 'base64');
+//     let ivBuffer = Buffer.from(iv, 'base64');
+
+//     try {
+//         // 解密
+//         let decipher = CryptoJS.algo.AES.createDecryptor(
+//             CryptoJS.enc.Utf8.parse(sessionKeyBuffer.toString('utf8')),
+//             CryptoJS.enc.Utf8.parse(ivBuffer.toString('utf8'))
+//         );
+//         let decryptedBytes = decipher.decrypt(encryptedDataBuffer);
+//         let decryptedData = CryptoJS.enc.Utf8.stringify(decryptedBytes);
+//         return decryptedData.toString();
+//     } catch (e) {
+//         console.error(e);
+//         return null;
+//     }
+// }
+
+// // 使用示例
+// const sessionKey = 'YOUR_SESSION_KEY'; // 从微信服务器获取的会话密钥
+// const encryptedData = 'USER_ENCRYPTED_DATA'; // 用户提供的加密数据
+// const iv = 'USER_IV'; // 用户提供的初始化向量
+
+// const decryptedData = decryptData(sessionKey, encryptedData, iv);
+// console.log(decryptedData);

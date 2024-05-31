@@ -17,9 +17,11 @@ import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
 import { WechatService } from './wechatapp/index.js';
+import { useLogger } from '../logger.js';
 
 
 const env = useEnv();
+const logger = useLogger();
 
 export class UsersService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -149,6 +151,16 @@ export class UsersService extends ItemsService {
 			.select('id', 'role', 'status', 'password', 'email')
 			.from('directus_users')
 			.whereRaw(`LOWER(??) = ?`, ['email', email.toLowerCase()])
+			.first();
+	}
+
+	private async getUserByPhone(
+		phone: string,
+	): Promise<{ id: string; role: string; status: string; email: string } | undefined> {
+		return await this.knex
+			.select('id', 'role', 'status', 'password', 'email')
+			.from('directus_users')
+			.whereRaw(`LOWER(??) = ?`, ['email', phone.toLowerCase+'@nobody.com'])
 			.first();
 	}
 
@@ -453,7 +465,38 @@ export class UsersService extends ItemsService {
 			accountability: this.accountability,
 		})
 
-		const wxToken = wechatService.getAccessToken();
+		try{
+			const wxSession =await wechatService.jscode2session(code)
+
+			if (!wxSession){
+				 return
+				 //todo return get openid failed.
+			}else{
+				//todo get response.phone number
+				// const wxPhone = wxSession['Phone'];
+				const wxPhone ='12345678'
+				const user = await this.getUserByPhone(wxPhone);
+
+				// Create user first to verify uniqueness if unknown
+				if (isEmpty(user)) {
+					// await this.createOne({ email, role, status: 'invited' }, opts);
+
+					// For known users update role if changed
+				} else if (user.status === 'invited') {
+					// await this.updateOne(user.id, { role }, opts);
+				}
+
+				const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+				const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+
+			}
+		} catch (error: any) {
+				logger.error(error);
+
+		}
+
+
+
 
 		//todo get openid
 
