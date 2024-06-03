@@ -7,6 +7,7 @@ import { useEnv } from '../../env.js';
 import { useLogger } from '../../logger.js';
 // import getMailer from '../../mailer.js';
 import type { AbstractServiceOptions } from '../../types/index.js';
+import { randomUUID } from 'crypto';
 // import  CryptoJS from 'crypto-js'
 // import { Url } from '../../utils/url.js';
 
@@ -21,14 +22,35 @@ const logger = useLogger();
 // 	data: T;
 //   }
 
-// interface WxSession {
-// 	openid: string,
-// 	session_key: string,
-// 	unionid: string,
-// 	errcode: string,
-// 	errmsg: string,
+interface WxSessionRes {
+	openid: string,
+	session_key: string,
+	unionid: string,
+	errcode: number,
+	errmsg: string,
 
-// };
+};
+
+interface WxPhone{
+	phoneNumber:string,
+	purePhoneNumber:string,
+	countryCode	:string,
+	watermark: object
+
+}
+
+interface WxPhoneRes {
+	errcode: number,
+	errmsg: string,
+	unionid: string,
+	phone_info: WxPhone,
+
+};
+// 定义响应类型
+interface WxTokenRes {
+	access_token: string;
+	expires_in: number;
+  }
 
 export class WechatService{
 
@@ -54,23 +76,24 @@ export class WechatService{
 
 		let eventuallySccessToken = '';
 		// let accessToken='';
-		//nb_accessToken为表
-		const sqlAccessToken = await this.knex('nb_accessToken').select('*').first();
+		//nb_accesstokens为表
+		const sqlAccessToken = await this.knex('nb_accessToken').select('id','create_time','expires_in','access_token').first();
 
 		if(sqlAccessToken != undefined) {
-			// const oldTime = sqlAccessToken.create_time
+			const expiresIn = sqlAccessToken.expires_in
 			const oldTime = new Date(sqlAccessToken.create_time).getTime();
 			const newTime = (new Date()).getTime();
-			const isTimeValidate = (newTime - oldTime)/1000/60/60;
+			const isTimeValidate = ((newTime - oldTime)/1000-expiresIn)/60;
 
-			//已经失效了。
-			if(isTimeValidate >1 ){
+			//已经失效了或有效时间小于1M‘。
+			if(isTimeValidate <1 ){
 				//重新获取
 				const accessToken = await this.getHttpOption(url);
 
 				if(accessToken){
-					await this.knex('nb_accessToken').update({access_token: accessToken}).where('id', sqlAccessToken.id)
-					eventuallySccessToken = accessToken
+					//存储token
+					await this.knex('nb_accessToken').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
+					eventuallySccessToken = accessToken.access_token
 				}else{
 					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 				}
@@ -81,13 +104,13 @@ export class WechatService{
 				return eventuallySccessToken
 			}
 		}else{
-			//
+			//没有token
 			const accessToken = await this.getHttpOption(url)
   			//
 
 			if (accessToken) {
-				await this.knex('wx_accessToken').insert({access_token: accessToken}) ;
-				eventuallySccessToken = accessToken
+				await this.knex('wx_accessToken').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+				eventuallySccessToken = accessToken.access_token
 			} else {
 				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 			 }
@@ -97,7 +120,7 @@ export class WechatService{
 	};
 
 			//获取用户的UUID
-	async jscode2session(jscode: string): Promise<Response  | undefined>{
+	async jscode2session(jscode: string): Promise<WxSessionRes  | undefined>{
 		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?' +
 		'grant_type=authorization_code&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']+'&js_code='+jscode);
 
@@ -109,15 +132,57 @@ export class WechatService{
 			if(!res.ok){
 				throw new Error(`[${res.status}] ${await res.text()}`)
 			}else{
-				return res
+				return res.json() as Promise<WxSessionRes>
 			}
 		} catch (error: any) {
 			logger.error(error);
 			return undefined
 
 		}
-
 	}
+
+	async getPhoneNumber(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
+		// https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN
+		const url = new  URL('https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token='+access_token);
+
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				body:JSON.stringify({'code': jscode})
+			})
+
+			if(!res.ok){
+				throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
+				return res.json() as Promise<WxPhoneRes>
+			}
+		} catch (error: any) {
+			logger.error(error);
+			return undefined
+
+		}
+	}
+
+	private async getHttpOption (url:URL):Promise<WxTokenRes | undefined> {
+
+		try {
+			const res = await fetch(url, {
+				method: 'GET',
+				// body: JSON.stringify(report),
+				// headers,
+			});
+
+			if (!res.ok) {
+				throw new Error(`[${res.status}] ${await res.text()}`);
+			} else{
+				return res.json() as Promise<WxTokenRes>
+			}
+		} catch (error: any) {
+			logger.error(error);
+			return undefined
+		}
+	}
+}
 
 	// async getUserInfo(jscode: string): Promise<any> {
 	// 	const url = new URL('');
@@ -171,26 +236,6 @@ export class WechatService{
 	// }
 
 
-	private async getHttpOption (url:URL) {
-
-		const res = await fetch(url, {
-			method: 'GET',
-			// body: JSON.stringify(report),
-			// headers,
-		});
-
-		if (!res.ok) {
-			throw new Error(`[${res.status}] ${await res.text()}`);
-		} else{
-			const accessToken = JSON.stringify(res.body)
-			return accessToken
-		}
-
-	}
-
-
-
-}
 
 
 // import CryptoJS from 'crypto-js';

@@ -474,6 +474,7 @@ export class UsersService extends ItemsService {
 			}else{
 				//todo get response.phone number
 				// const wxPhone = wxSession['Phone'];
+				wxSession.openid
 				const wxPhone ='12345678'
 				const user = await this.getUserByPhone(wxPhone);
 
