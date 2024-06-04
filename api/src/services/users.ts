@@ -469,27 +469,28 @@ export class UsersService extends ItemsService {
 			const wxSession =await wechatService.jscode2session(code)
 
 			if (!wxSession){
-				 return
+				throw new InvalidPayloadError({ reason: `Failed to touch the wechat server` });
 				 //todo return get openid failed.
-			}else{
+			}else if(wxSession.errcode===0){
+
 				//todo get response.phone number
 				// const wxPhone = wxSession['Phone'];
-				wxSession.openid
-				const wxPhone ='12345678'
-				const user = await this.getUserByPhone(wxPhone);
+				const wxOpenid = wxSession.openid
+				const wxUser = await this.knex.select('email').from('directus_users').where('openid', wxOpenid).first();
+
+				// const user = await this.getUserByPhone(wxPhone);
 
 				// Create user first to verify uniqueness if unknown
-				if (isEmpty(user)) {
-					// await this.createOne({ email, role, status: 'invited' }, opts);
-
-					// For known users update role if changed
-				} else if (user.status === 'invited') {
-					// await this.updateOne(user.id, { role }, opts);
+				if (isEmpty(wxUser)) {
+					//todo get user phone number
+					await this.createOne({ wxUser, role: 'role', status: 'active' });
 				}
 
 				const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
 				const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
 
+			}else{
+				throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${code}} is error` });
 			}
 		} catch (error: any) {
 				logger.error(error);
@@ -497,32 +498,28 @@ export class UsersService extends ItemsService {
 		}
 
 
-
-
-		//todo get openid
-
-		const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-		const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+		// const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+		// const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
 
 	}
 
-	async wxGetUserInfo(code: string): Promise<void>{
+	// async wxGetUserInfo(code: string): Promise<void>{
 
-		// Todo insert
-		const wechatService = new WechatService({
-			schema: this.schema,
-			knex: this.knex,
-			accountability: this.accountability,
-		})
+	// 	// Todo insert
+	// 	const wechatService = new WechatService({
+	// 		schema: this.schema,
+	// 		knex: this.knex,
+	// 		accountability: this.accountability,
+	// 	})
 
-		const wxToken = wechatService.getAccessToken();
+	// 	const wxToken = wechatService.getAccessToken();
 
-		//todo get openid
+	// 	//todo get openid
 
-		const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-		const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+	// 	const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+	// 	const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
 
-	}
+	// }
 
 
 	async requestPasswordReset(email: string, url: string | null, subject?: string | null): Promise<void> {
