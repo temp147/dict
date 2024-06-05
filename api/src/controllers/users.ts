@@ -325,27 +325,27 @@ router.post(
 	respond,
 );
 
-// wx.request data{code:res.code}
-router.post(
-	'/wxlogin',
-	asyncHandler(async (req, _res, next) => {
-		const code = req.body.code ;
+// // wx.request data{code:res.code}
+// router.post(
+// 	'/wxlogin',
+// 	asyncHandler(async (req, _res, next) => {
+// 		const code = req.body.code ;
 
-		if (code != undefined){
-			const service= new UsersService({
-				accountability: req.accountability,
-				schema: req.schema,
-			});
+// 		if (code != undefined){
+// 			const service= new UsersService({
+// 				accountability: req.accountability,
+// 				schema: req.schema,
+// 			});
 
 
-			await service.wxLogin(code);
-			return next();
-		}else{
-			throw new InvalidPayloadError({reason:'No Code in request body.'})
-		}
-	}),
-	respond,
-);
+// 			await service.wxLogin(code);
+// 			return next();
+// 		}else{
+// 			throw new InvalidPayloadError({reason:'No Code in request body.'})
+// 		}
+// 	}),
+// 	respond,
+// );
 
 router.post(
 	'/me/tfa/generate/',

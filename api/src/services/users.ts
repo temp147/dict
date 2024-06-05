@@ -16,12 +16,11 @@ import { Url } from '../utils/url.js';
 import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
-import { WechatService } from './wechatapp/index.js';
-import { useLogger } from '../logger.js';
+// import { useLogger } from '../logger.js';
 
 
 const env = useEnv();
-const logger = useLogger();
+
 
 export class UsersService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -154,15 +153,15 @@ export class UsersService extends ItemsService {
 			.first();
 	}
 
-	private async getUserByPhone(
-		phone: string,
-	): Promise<{ id: string; role: string; status: string; email: string } | undefined> {
-		return await this.knex
-			.select('id', 'role', 'status', 'password', 'email')
-			.from('directus_users')
-			.whereRaw(`LOWER(??) = ?`, ['email', phone.toLowerCase+'@nobody.com'])
-			.first();
-	}
+	// private async getUserByPhone(
+	// 	phone: string,
+	// ): Promise<{ id: string; role: string; status: string; email: string } | undefined> {
+	// 	return await this.knex
+	// 		.select('id', 'role', 'status', 'password', 'email')
+	// 		.from('directus_users')
+	// 		.whereRaw(`LOWER(??) = ?`, ['email', phone.toLowerCase+'@nobody.com'])
+	// 		.first();
+	// }
 
 	/**
 	 * Create url for inviting users
@@ -457,70 +456,6 @@ export class UsersService extends ItemsService {
 
 		await service.updateOne(user.id, { password, status: 'active' });
 	}
-
-	async wxLogin(code: string): Promise<void>{
-		const wechatService = new WechatService({
-			schema: this.schema,
-			knex: this.knex,
-			accountability: this.accountability,
-		})
-
-		try{
-			const wxSession =await wechatService.jscode2session(code)
-
-			if (!wxSession){
-				throw new InvalidPayloadError({ reason: `Failed to touch the wechat server` });
-				 //todo return get openid failed.
-			}else if(wxSession.errcode===0){
-
-				//todo get response.phone number
-				// const wxPhone = wxSession['Phone'];
-				const wxOpenid = wxSession.openid
-				const wxUser = await this.knex.select('email').from('directus_users').where('openid', wxOpenid).first();
-
-				// const user = await this.getUserByPhone(wxPhone);
-
-				// Create user first to verify uniqueness if unknown
-				if (isEmpty(wxUser)) {
-					//todo get user phone number
-					await this.createOne({ wxUser, role: 'role', status: 'active' });
-				}
-
-				const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-				const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
-
-			}else{
-				throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${code}} is error` });
-			}
-		} catch (error: any) {
-				logger.error(error);
-
-		}
-
-
-		// const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-		// const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
-
-	}
-
-	// async wxGetUserInfo(code: string): Promise<void>{
-
-	// 	// Todo insert
-	// 	const wechatService = new WechatService({
-	// 		schema: this.schema,
-	// 		knex: this.knex,
-	// 		accountability: this.accountability,
-	// 	})
-
-	// 	const wxToken = wechatService.getAccessToken();
-
-	// 	//todo get openid
-
-	// 	const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-	// 	const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
-
-	// }
-
 
 	async requestPasswordReset(email: string, url: string | null, subject?: string | null): Promise<void> {
 		const STALL_TIME = 500;
