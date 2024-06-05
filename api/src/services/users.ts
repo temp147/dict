@@ -16,8 +16,11 @@ import { Url } from '../utils/url.js';
 import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
+// import { useLogger } from '../logger.js';
+
 
 const env = useEnv();
+
 
 export class UsersService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -149,6 +152,16 @@ export class UsersService extends ItemsService {
 			.whereRaw(`LOWER(??) = ?`, ['email', email.toLowerCase()])
 			.first();
 	}
+
+	// private async getUserByPhone(
+	// 	phone: string,
+	// ): Promise<{ id: string; role: string; status: string; email: string } | undefined> {
+	// 	return await this.knex
+	// 		.select('id', 'role', 'status', 'password', 'email')
+	// 		.from('directus_users')
+	// 		.whereRaw(`LOWER(??) = ?`, ['email', phone.toLowerCase+'@nobody.com'])
+	// 		.first();
+	// }
 
 	/**
 	 * Create url for inviting users

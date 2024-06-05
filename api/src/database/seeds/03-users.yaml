@@ -61,3 +61,12 @@ columns:
   last_page:
     type: string
     length: 255
+  openid:
+    type: string
+    length: 255
+  uuid :
+    type: string
+    length: 255
+  phone:
+    type: string
+    length: 255
