@@ -1,0 +1,15 @@
+table: nb_accesstokens
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  create_time:
+    type: timestamp
+    default: $now
+  expires_in:
+    type: integer
+  access_token:
+    type: string
+
