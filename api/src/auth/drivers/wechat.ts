@@ -11,7 +11,7 @@ import { useEnv } from '../../env.js';
 import { useLogger } from '../../logger.js';
 import { respond } from '../../middleware/respond.js';
 import { AuthenticationService } from '../../services/authentication.js';
-// import { UsersService } from '../../services/users.js';
+import { UsersService } from '../../services/users.js';
 import type { AuthDriverOptions, User } from '../../types/index.js';
 import asyncHandler from '../../utils/async-handler.js';
 import { COOKIE_OPTIONS } from '../../constants.js';
@@ -27,8 +27,8 @@ import { stall } from '../../utils/stall.js';
 export class WechatAuthDriver extends LocalAuthDriver {
 	// client: Client;
 	// redirectUrl: string;
-	// usersService: UsersService;
-	// config: Record<string, any>;
+	usersService: UsersService;
+	config: Record<string, any>;
 
 	constructor(options: AuthDriverOptions, config: Record<string, any>) {
 		super(options, config);
@@ -44,6 +44,9 @@ export class WechatAuthDriver extends LocalAuthDriver {
 			logger.error('Invalid provider config');
 			throw new InvalidProviderConfigError({ provider: additionalConfig['provider'] });
 		}
+
+		this.usersService = new UsersService({ knex: this.knex, schema: this.schema });
+		this.config = additionalConfig;
 	}
 
 	override async login(user: User): Promise<void> {
@@ -107,7 +110,10 @@ export class WechatAuthDriver extends LocalAuthDriver {
 			// Create user first to verify uniqueness if unknown
 			if (isEmpty(wxUser)) {
 				//todo get user phone number
-				throw new InvalidCredentialsError();
+				const userEmail = wxOpenid + '@nobody.nb';
+				const userId= await this.usersService.createOne({userEmail, status: 'active'} )
+				// throw new InvalidCredentialsError();
+				return userId.toString()
 			}
 
 				return wxUser.id
@@ -169,7 +175,7 @@ export function createWechatAuthRouter(providerName: string): Router {
 	// const env = useEnv();
 
 	router.post(
-		'/wxlogin',
+		'/',
 		asyncHandler(async (req, res, next) => {
 			// const provider = getAuthProvider(providerName) as WechatAuthDriver;
 			const logger = useLogger();

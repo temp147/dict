@@ -50,7 +50,7 @@ for (const authProvider of authProviders) {
 			break;
 
 		case 'wechat':
-			authRouter = createWechatAuthRouter('wechat');
+			authRouter = createWechatAuthRouter(authProvider.name);
 			break;
 	}
 

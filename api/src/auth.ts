@@ -7,6 +7,7 @@ import {
 	OAuth2AuthDriver,
 	OpenIDAuthDriver,
 	SAMLAuthDriver,
+	WechatAuthDriver
 } from './auth/drivers/index.js';
 import { DEFAULT_AUTH_PROVIDER } from './constants.js';
 import getDatabase from './database/index.js';
@@ -93,6 +94,9 @@ function getProviderInstance(
 
 		case 'saml':
 			return new SAMLAuthDriver(options, config);
+
+		case 'wechat':
+			return new WechatAuthDriver(options, config);
 	}
 
 	return undefined;
