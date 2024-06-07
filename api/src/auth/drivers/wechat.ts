@@ -118,7 +118,7 @@ export class WechatAuthDriver extends LocalAuthDriver {
 
 				return wxUser.id
 		}else{
-			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${payload['code']}} is error` });
+			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${payload['code']} is error, errcode ${wxSession.errcode},openid ${wxSession.openid}` });
 		}
 
 	}
