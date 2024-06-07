@@ -64,7 +64,7 @@ export class WechatService{
 		this.knex = opts?.knex || getDatabase();
 
 		if (env['WECHAT_AUTH']) {
-				if (!env['WECHAT_APPKEY']||!env['WECHAT_APPSECRET']) {
+				if (!env['AUTH_WECHAT_APPKEY']||!env['AUTH_WECHAT_APPSECRET']) {
 					logger.warn(`WECHAT APPKEY is not set.`);
 			}
 		}
@@ -72,7 +72,7 @@ export class WechatService{
 
 	async getAccessToken(){
 		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
-		'grant_type=client_credential&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']);
+		'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
 
 		let eventuallySccessToken = '';
 		// let accessToken='';
@@ -122,7 +122,7 @@ export class WechatService{
 			//获取用户的UUID
 	async jscode2session(jscode: string): Promise<WxSessionRes  | undefined>{
 		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?' +
-		'grant_type=authorization_code&appid='+env['WECHAT_APPKEY']+'&secret='+env['WECHAT_APPSECRET']+'&js_code='+jscode);
+		'grant_type=authorization_code&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']+'&js_code='+jscode);
 
 		try {
 			const res = await fetch(url, {
