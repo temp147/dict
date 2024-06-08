@@ -99,7 +99,7 @@ export class WechatAuthDriver extends LocalAuthDriver {
 		if (!wxSession){
 			throw new InvalidPayloadError({ reason: `Failed to touch the wechat server` });
 			 //todo return get openid failed.
-		}else if(wxSession.errcode===0){
+		}else if(!wxSession.errcode){
 
 			//todo get response.phone number
 			const wxOpenid = wxSession.openid
@@ -110,15 +110,15 @@ export class WechatAuthDriver extends LocalAuthDriver {
 			// Create user first to verify uniqueness if unknown
 			if (isEmpty(wxUser)) {
 				//todo get user phone number
-				const userEmail = wxOpenid + '@nobody.nb';
-				const userId= await this.usersService.createOne({userEmail, status: 'active'} )
+				const userEmail = wxOpenid + '@metacause.cn';
+				const userId= await this.usersService.createOne({userEmail, status: 'active',openid:wxOpenid} )
 				// throw new InvalidCredentialsError();
 				return userId.toString()
 			}
 
 				return wxUser.id
 		}else{
-			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${payload['code']}} is error` });
+			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${payload['code']} is error, errcode ${wxSession.errcode},openid ${wxSession.openid}` });
 		}
 
 	}

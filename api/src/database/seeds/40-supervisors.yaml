@@ -1,16 +1,18 @@
-table: nb_perferences
+table: nb_supervisors
 
 columns:
   id:
     type: uuid
     primary: true
     nullable: false
-  users:
+  name:
+    type: string
+  function_point:
+    type: string
+    nullable: false
+  agents:
     type: uuid
     nullable: false
     references:
-      table: directus_users
+      table: nb_agents
       column: id
-  details:
-    type: string
-    nullable: true

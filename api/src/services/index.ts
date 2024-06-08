@@ -35,3 +35,24 @@ export * from './utils.js';
 export * from './versions.js';
 export * from './webhooks.js';
 export * from './websocket.js';
+//user model
+export * from './agents.js';
+export * from './chats.js';
+export * from './comments.js';
+export * from './companies.js';
+export * from './conclusions.js';
+export * from './courses.js';
+export * from './diaies.js';
+export * from './histories.js';
+export * from './members.js';
+export * from './organizations.js';
+export * from './personinfos.js';
+export * from './preferences.js';
+// export * from './questionnaires.js';
+export * from './reports.js';
+export * from './resources.js';
+export * from './servers.js';
+export * from './surveys.js';
+export * from './usermoods.js';
+
+

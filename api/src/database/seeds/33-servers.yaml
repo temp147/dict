@@ -1,0 +1,23 @@
+table: nb_servers
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+    length: 255
+    nullable: false
+  url:
+    type: string
+    nullable: false
+  type:  # One of: 'flowise', 'others',
+    type: string
+    nullable: false
+  apikey:
+    type: string
+    nullable: true
+  apisecret:
+    type: string
+    nullable: true
