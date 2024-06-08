@@ -139,6 +139,10 @@ export class WechatService{
 			return undefined
 
 		}
+
+		// const res =  {'openid':'1234'};
+
+		// return res as WxSessionRes
 	}
 
 	async getPhoneNumber(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
