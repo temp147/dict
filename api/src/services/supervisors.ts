@@ -4,9 +4,9 @@ import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 
 
-export class QustionnairesService extends ItemsService {
+export class SupervisorsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
-		super('nb_qustionnaires', options);
+		super('nb_supervisors', options);
 
 		this.knex = options.knex || getDatabase();
 		this.accountability = options.accountability || null;

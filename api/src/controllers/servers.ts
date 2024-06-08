@@ -4,7 +4,7 @@ import { ErrorCode } from '@directus/errors';
 import { respond } from '../middleware/respond.js';
 import useCollection from '../middleware/use-collection.js';
 import { validateBatch } from '../middleware/validate-batch.js';
-import { QustionnairesService } from '../services/qustionnaires.js';
+import { ServersService } from '../services/servers.js';
 import { MetaService } from '../services/meta.js';
 import type { PrimaryKey } from '../types/index.js';
 import asyncHandler from '../utils/async-handler.js';
@@ -12,12 +12,12 @@ import { sanitizeQuery } from '../utils/sanitize-query.js';
 
 const router = express.Router();
 
-router.use(useCollection('nb_courses'));
+router.use(useCollection('nb_servers'));
 
 router.post(
 	'/',
 	asyncHandler(async (req, res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});
@@ -54,7 +54,7 @@ router.post(
 );
 
 const readHandler = asyncHandler(async (req, res, next) => {
-	const service = new QustionnairesService({
+	const service = new ServersService({
 		accountability: req.accountability,
 		schema: req.schema,
 	});
@@ -86,7 +86,7 @@ router.search('/', validateBatch('read'), readHandler, respond);
 router.get(
 	'/:pk',
 	asyncHandler(async (req, res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});
@@ -103,7 +103,7 @@ router.patch(
 	'/',
 	validateBatch('update'),
 	asyncHandler(async (req, res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});
@@ -138,7 +138,7 @@ router.patch(
 router.patch(
 	'/:pk',
 	asyncHandler(async (req, res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});
@@ -165,7 +165,7 @@ router.delete(
 	'/',
 	validateBatch('delete'),
 	asyncHandler(async (req, _res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});
@@ -187,7 +187,7 @@ router.delete(
 router.delete(
 	'/:pk',
 	asyncHandler(async (req, _res, next) => {
-		const service = new QustionnairesService({
+		const service = new ServersService({
 			accountability: req.accountability,
 			schema: req.schema,
 		});

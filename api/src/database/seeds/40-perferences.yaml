@@ -1,18 +1,22 @@
-table: nb_historys  #chat history
+table: nb_perferences
 
-columns:           #todo disign
+columns:
   id:
     type: uuid
     primary: true
     nullable: false
-  content:
-    type: text
   users:
     type: uuid
     nullable: false
     references:
       table: directus_users
       column: id
-  type:
+  details:
     type: string
-    length: 255
+    nullable: true
+  agents:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_agents
+      column: id

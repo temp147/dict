@@ -7,9 +7,11 @@ columns:
     nullable: false
   name:
     type: string
-    length: 255
-    nullable: false
-  description:
+    nullable: true
+  question:
     type: string
     nullable: true
+  isNagtive: #是否反向问题
+    type: boolean
+    nullable: false
 
