@@ -88,37 +88,29 @@ export class WechatAuthDriver extends LocalAuthDriver {
 			knex: this.knex
 		})
 
-		// const usersService = new UsersService({
-		// 	schema: this.schema,
-		// 	knex: this.knex
-		// })
-
-
 		const wxSession =await wechatService.jscode2session(payload['code'])
 
 		if (!wxSession){
 			throw new InvalidPayloadError({ reason: `Failed to touch the wechat server` });
-			 //todo return get openid failed.
-		}else if(wxSession.errcode===0){
+		}else if(wxSession.errcode===0||!wxSession.errcode){
 
 			//todo get response.phone number
-			const wxOpenid = wxSession.openid
-			const wxUser = await this.knex.select('id').from('directus_users').where('openid', wxOpenid).first();
-
-			// const user = await this.getUserByPhone(wxPhone);
+			const wxOpenId = wxSession.openid
+			// const wxUnionId = wxSession.unionid
+			const wxUser = await this.knex.select('id').from('directus_users').where('external_identifier', wxOpenId).first();
 
 			// Create user first to verify uniqueness if unknown
 			if (isEmpty(wxUser)) {
 				//todo get user phone number
-				const userEmail = wxOpenid + '@nobody.nb';
-				const userId= await this.usersService.createOne({userEmail, status: 'active'} )
+				const userEmail = wxOpenId + '@nobody.com';
+				const userId= await this.usersService.createOne({email: userEmail, status: 'active', external_identifier: wxOpenId, provider: 'wechat'} )
 				// throw new InvalidCredentialsError();
 				return userId.toString()
 			}
 
 				return wxUser.id
 		}else{
-			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,may be the code ${payload['code']}} is error` });
+			throw new InvalidPayloadError({ reason: `Failed to get the wechat userinfo,maybe the code ${payload['code']} is error. wechat errcode ${wxSession.errcode}` });
 		}
 
 	}
