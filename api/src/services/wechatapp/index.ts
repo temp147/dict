@@ -70,7 +70,7 @@ export class WechatService{
 		}
 	}
 
-	async getAccessToken(){
+	async getAccessToken():Promise<string>{
 		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
 		'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
 
@@ -145,7 +145,7 @@ export class WechatService{
 		// return res as WxSessionRes
 	}
 
-	async getPhoneNumber(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
+	async getPhoneByCode(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
 		// https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN
 		const url = new  URL('https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token='+access_token);
 
@@ -163,7 +163,6 @@ export class WechatService{
 		} catch (error: any) {
 			logger.error(error);
 			return undefined
-
 		}
 	}
 

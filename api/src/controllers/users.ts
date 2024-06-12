@@ -325,27 +325,6 @@ router.post(
 	respond,
 );
 
-// // wx.request data{code:res.code}
-// router.post(
-// 	'/wxlogin',
-// 	asyncHandler(async (req, _res, next) => {
-// 		const code = req.body.code ;
-
-// 		if (code != undefined){
-// 			const service= new UsersService({
-// 				accountability: req.accountability,
-// 				schema: req.schema,
-// 			});
-
-
-// 			await service.wxLogin(code);
-// 			return next();
-// 		}else{
-// 			throw new InvalidPayloadError({reason:'No Code in request body.'})
-// 		}
-// 	}),
-// 	respond,
-// );
 
 router.post(
 	'/me/tfa/generate/',
@@ -518,5 +497,43 @@ router.post(
 	}),
 	respond,
 );
+
+
+router.post(
+	'/me/getwxphone/',
+	asyncHandler(async(req, res, next)=>{
+		const code = req.body.code;
+
+		//验证用户是否存在
+		if (!req.accountability?.user) {
+			throw new InvalidCredentialsError();
+		}
+
+		//验证code存在
+		if (code != undefined){
+			const service= new UsersService({
+				accountability: req.accountability,
+				schema: req.schema,
+			});
+
+			// 刷新手机号
+			try{
+				await service.updatePhoneByWxcode(req.accountability.user,code);
+				res.locals['payload'] ={data: {id:req.accountability.user}}
+			} catch(error: any){
+				if (isDirectusError(error, ErrorCode.Forbidden)) {
+					res.locals['payload'] = { data: { id: req.accountability.user } };
+					return next();
+				}
+			}
+
+		}else{
+			throw new InvalidPayloadError({reason:'No Code in request body.'})
+		}
+
+		return next();
+	}),
+	respond,
+)
 
 export default router;

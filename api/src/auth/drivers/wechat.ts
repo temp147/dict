@@ -102,7 +102,7 @@ export class WechatAuthDriver extends LocalAuthDriver {
 			// Create user first to verify uniqueness if unknown
 			if (isEmpty(wxUser)) {
 				//todo get user phone number
-				const userEmail = wxOpenId + '@nobody.com';
+				const userEmail = wxOpenId + '@metacause.cn';
 				const userId= await this.usersService.createOne({email: userEmail, status: 'active', external_identifier: wxOpenId, provider: 'wechat'} )
 				// throw new InvalidCredentialsError();
 				return userId.toString()
@@ -116,22 +116,22 @@ export class WechatAuthDriver extends LocalAuthDriver {
 	}
 
 
-	async getUserInfo(code: string): Promise<void>{
+// 	async getUserInfo(code: string): Promise<void>{
 
-		// Todo insert
-		const wechatService = new WechatService({
-			schema: this.schema,
-			knex: this.knex,
-		})
+// 		// Todo insert
+// 		const wechatService = new WechatService({
+// 			schema: this.schema,
+// 			knex: this.knex,
+// 		})
 
-		const wxToken = wechatService.getAccessToken();
+// 		const wxToken = wechatService.getAccessToken();
 
-		//todo get openid
+// 		//todo get openid
 
-		// const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
-		// const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
+// 		// const payload = { email: '111@123.com', scope: 'password-reset', hash: getSimpleHash('' + 'user.password') };
+// 		// const token = jwt.sign(payload, env['SECRET'] as string, { expiresIn: '1d', issuer: 'directus' });
 
-	}
+// 	}
 }
 
 // const handleError = (e: any) => {
@@ -233,34 +233,34 @@ export function createWechatAuthRouter(providerName: string): Router {
 		respond,
 	);
 
-	router.post(
-		'/getUserInfo',
+	// router.post(
+	// 	'/getUserInfo',
 
-		(req,res) => {
+	// 	(req,res) => {
 
-			const provider = getAuthProvider(providerName) as WechatAuthDriver;
-			const logger = useLogger();
+	// 		const provider = getAuthProvider(providerName) as WechatAuthDriver;
+	// 		const logger = useLogger();
 
-			if(!req.body.code){
-				logger.warn(`[Wechat] There is no parameters called code.`);
-				throw new InvalidCredentialsError();
-			}
+	// 		if(!req.body.code){
+	// 			logger.warn(`[Wechat] There is no parameters called code.`);
+	// 			throw new InvalidCredentialsError();
+	// 		}
 
-			const code = req.body.code;
+	// 		const code = req.body.code;
 
-			try{
-				provider.getUserInfo(code);
-			}
-			catch(e:any){
-				logger.warn(`[Wechat] code exchage failed.`);
-				throw(e);
-			}
+	// 		try{
+	// 			provider.getUserInfo(code);
+	// 		}
+	// 		catch(e:any){
+	// 			logger.warn(`[Wechat] code exchage failed.`);
+	// 			throw(e);
+	// 		}
 
-			res.redirect(303, `./callback?${new URLSearchParams(req.body)}`);
+	// 		res.redirect(303, `./callback?${new URLSearchParams(req.body)}`);
 
-		}
+	// 	}
 
-	)
+	// )
 
 
 

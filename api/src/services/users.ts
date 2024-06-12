@@ -16,7 +16,8 @@ import { Url } from '../utils/url.js';
 import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
-// import { useLogger } from '../logger.js';
+import { WechatService } from './wechatapp/index.js';
+import { PropertyAccessToken } from 'liquidjs/dist/src/tokens/property-access-token.js';
 
 
 const env = useEnv();
@@ -153,15 +154,15 @@ export class UsersService extends ItemsService {
 			.first();
 	}
 
-	// private async getUserByPhone(
-	// 	phone: string,
-	// ): Promise<{ id: string; role: string; status: string; email: string } | undefined> {
-	// 	return await this.knex
-	// 		.select('id', 'role', 'status', 'password', 'email')
-	// 		.from('directus_users')
-	// 		.whereRaw(`LOWER(??) = ?`, ['email', phone.toLowerCase+'@nobody.com'])
-	// 		.first();
-	// }
+	private async getUserById(
+		userId: PrimaryKey,
+	): Promise<{ id: string; role: string; status: string; email: string , phone: string, provider: string} | undefined> {
+		return await this.knex
+			.select('id', 'role', 'status', 'email','phone','provider')
+			.from('directus_users')
+			.whereRaw(`id = ?`, [userId])
+			.first();
+	}
 
 	/**
 	 * Create url for inviting users
@@ -320,6 +321,14 @@ export class UsersService extends ItemsService {
 			if (data['provider'] !== undefined) {
 				if (this.accountability && this.accountability.admin !== true) {
 					throw new InvalidPayloadError({ reason: `You can't change the "provider" value manually` });
+				}
+
+				data['auth_data'] = null;
+			}
+
+			if (data['phone'] !== undefined) {
+				if (this.accountability && this.accountability.admin !== true) {
+					throw new InvalidPayloadError({ reason: `You can't change the "phone" value manually` });
 				}
 
 				data['auth_data'] = null;
@@ -536,5 +545,46 @@ export class UsersService extends ItemsService {
 		});
 
 		await service.updateOne(user.id, { password, status: 'active' }, opts);
+	}
+
+	async updatePhoneByWxcode(key:PrimaryKey, code:string): Promise<void>{
+
+		const user = await this.getUserById(key);
+
+		if(user?.provider !=='wechat'){
+			throw new InvalidPayloadError({reason: `UserId ${key} is not exited or the user is not a valid wechat user` })
+		}
+
+		const wechatService = new WechatService({
+			knex: this.knex,
+			schema: this.schema,
+		});
+
+		const usersservice = new UsersService({
+			knex: this.knex,
+			schema: this.schema,
+			accountability: {
+				...(this.accountability ?? { role: null }),
+				admin: true, // We need to skip permissions checks for the update call below
+			},
+		});
+
+		const opts: MutationOptions = {};
+
+		try {
+			const accessToken = await wechatService.getAccessToken();
+
+			const wxPhone = await wechatService.getPhoneByCode(code, accessToken)
+
+			if(!wxPhone||wxPhone.errcode!==0){
+				throw new Error(`Fail to get Wechat Phone Number`)
+			}else{
+				usersservice.updateOne(key,{phone: wxPhone.phone_info})
+			}
+
+		}catch(err:any){
+			opts.preMutationError = err;
+		}
+
 	}
 }
