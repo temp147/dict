@@ -6,7 +6,7 @@ import {
 import type { Accountability } from '@directus/types';
 import  { Router } from 'express';
 import { isEmpty } from 'lodash-es';
-import { getAuthProvider } from '../../auth.js';
+// import { getAuthProvider } from '../../auth.js';
 import { useEnv } from '../../env.js';
 import { useLogger } from '../../logger.js';
 import { respond } from '../../middleware/respond.js';

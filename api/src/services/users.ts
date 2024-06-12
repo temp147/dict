@@ -17,7 +17,7 @@ import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
 import { WechatService } from './wechatapp/index.js';
-import { PropertyAccessToken } from 'liquidjs/dist/src/tokens/property-access-token.js';
+
 
 
 const env = useEnv();
