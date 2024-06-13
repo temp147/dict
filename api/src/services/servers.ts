@@ -1,10 +1,17 @@
 import type { PrimaryKey } from '@directus/types';
 import getDatabase from '../database/index.js';
-import type { AbstractServiceOptions } from '../types/index.js';
+import type { AbstractServiceOptions,Item } from '../types/index.js';
 import { ItemsService } from './items.js';
 import { URL } from 'node:url';
+import { isEmpty } from 'lodash-es';
 // import type { Url } from '../utils/url.js';
 
+interface FlowiseRes {
+	text: string;
+	question: string;
+	chatId: string;
+	chatMessageId: string;
+  }
 
 
 export class ServersService extends ItemsService {
@@ -27,19 +34,60 @@ export class ServersService extends ItemsService {
 	}
 
 	// async gerateS(key: PrimaryKey, data: Record<string, any>,
-	async gerateUrl(key: PrimaryKey,
+	private async gerateUrl(key: PrimaryKey,
 		): Promise<{url: URL ; apikey: string, apisecret:string}|undefined > {
 
 		const aiServer = await this.getServerByKey(key);
 
 		if( aiServer?.type === 'flowise'){
 			const url = new URL('/api/v1/prediction/', aiServer.url);
-			const apikey = aiServer.apikey
-			const apisecret = aiServer.apisecret
+			const apikey = '0'
+
+			if(aiServer.apisecret){
+				const apisecret = 'Bearer '+aiServer.apisecret
+				return {url, apikey, apisecret};
+			}
+
+			const apisecret = '0';
 			return {url, apikey, apisecret};
 		}
 		else{
 			return ;
+		}
+	}
+
+	async sendChat(key:PrimaryKey,message: Partial<Item>[]): Promise<FlowiseRes|undefined>{
+
+		const servers =await this.gerateUrl(key);
+
+		if(isEmpty(servers)){
+			return ;
+		}else {
+			const headers: HeadersInit = {
+				'Content-Type': 'application/json',
+			};
+
+			headers['Authorization'] = servers.apisecret;
+
+			let res;
+
+			if(servers.apisecret==='0'){
+				    res = await fetch(servers.url,{
+					method:'POST',
+					body: JSON.stringify(message),
+				});
+
+				return  res.json() as Promise<FlowiseRes>
+
+			}else {
+				    res = await fetch(servers.url,{
+					method:'POST',
+					body: JSON.stringify(message),
+					headers,
+				});
+
+				return  res.json() as Promise<FlowiseRes>
+			}
 		}
 	}
 }

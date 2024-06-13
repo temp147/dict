@@ -17,6 +17,7 @@ import { ItemsService } from './items.js';
 import { MailService } from './mail/index.js';
 import { SettingsService } from './settings.js';
 import { WechatService } from './wechatapp/index.js';
+// import { error } from 'console';
 
 
 
@@ -576,10 +577,11 @@ export class UsersService extends ItemsService {
 
 			const wxPhone = await wechatService.getPhoneByCode(code, accessToken)
 
-			if(!wxPhone||wxPhone.errcode!==0){
-				throw new Error(`Fail to get Wechat Phone Number`)
+			//没有返回或者返回的错误代码存在且错误代码不为0
+			if(!wxPhone||(wxPhone.errcode&&wxPhone.errcode!==0)){
+				throw new InvalidPayloadError({reason: `Fail to get Wechat Phone Number,wechat errorcode  ${wxPhone?.errcode}` })
 			}else{
-				usersservice.updateOne(key,{phone: wxPhone.phone_info})
+				usersservice.updateOne(key,{phone: wxPhone.phone_info.phoneNumber})
 			}
 
 		}catch(err:any){

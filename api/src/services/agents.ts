@@ -3,7 +3,7 @@ import type { AbstractServiceOptions, Item, MutationOptions  } from '../types/in
 import { ItemsService } from './items.js';
 import { ServersService } from './servers.js';
 import { ChatsService } from './chats.js';
-import { isEmpty } from 'lodash-es';
+// import { isEmpty } from 'lodash-es';
 import type { PrimaryKey } from '@directus/types';
 
 export class AgentsService extends ItemsService {
@@ -31,33 +31,18 @@ export class AgentsService extends ItemsService {
 
 		const agentServer = await this.getServerByKey(flowId);
 
-		const servers =await serversService.gerateUrl(agentServer?.servers);
+		const res =await serversService.sendChat(agentServer?.servers, data);
 
-		if(isEmpty(servers)){
+
+		const chatsService = new ChatsService({
+			schema: this.schema,
+			accountability: this.accountability,
+		});
+
+		//todo save chat history
+		if(res?.chatMessageId){
+			await chatsService.createOne(res)
 			return ;
-		}else{
-			const headers: HeadersInit = {
-				'Content-Type': 'application/json',
-			};
-
-			headers['Authorization'] = servers.apikey;
-
-			const  res = await fetch(servers.url,{
-				method:'POST',
-				body: JSON.stringify(data),
-				headers,
-			});
-
-			const chatsService = new ChatsService({
-				schema: this.schema,
-				accountability: this.accountability,
-			});
-
-			if(res.body){
-				await chatsService.createOne(res.body)
-				return ;
-			}
-
 		}
 
 	}
