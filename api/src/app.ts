@@ -297,7 +297,12 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_resources', resourcesRouter);
 	app.use('/items/nb_surveys', surveysRouter);
 	app.use('/items/nb_usermoods', usermoodssRouter);
-	app.use('/items/nb_usermoods', userstressRouter);
+	app.use('/items/nb_userstress', userstressRouter);
+	app.use('/items/nb_courses', coursesRouter);
+	app.use('/items/nb_chats', chatsRouter);
+	app.use('/items/nb_agents', agentsRouter);
+	app.use('/items/nb_servers', serversRouter);
+	app.use('/items/nb_supervisors', supervisorsRouter);
 
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
@@ -323,12 +328,8 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/utils', utilsRouter);
 	app.use('/versions', versionsRouter);
 	app.use('/webhooks', webhooksRouter);
-	app.use('/resources', resourcesRouter);
-	app.use('/courses', coursesRouter);
-	app.use('/chats', chatsRouter);
-	app.use('/agents', agentsRouter);
-	app.use('/servers', serversRouter);
-	app.use('/supervisors', supervisorsRouter);
+	// app.use('/resources', resourcesRouter);
+
 
 	// Register custom endpoints
 	await emitter.emitInit('routes.custom.before', { app });
