@@ -21,7 +21,7 @@ export class AgentsService extends ItemsService {
 			return await this.knex
 				.select('servers')
 				.from('nb_agents')
-				.whereRaw(`LOWER(??) = ?`, ['uuid', key]);
+				.whereRaw(`LOWER(??) = ?`, ['id', key]);
 	};
 
 	async sendChats(flowId: string ,data: Partial<Item>[], opts?: MutationOptions): Promise<void> {
