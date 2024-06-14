@@ -5,6 +5,7 @@ import { ServersService } from './servers.js';
 import { ChatsService } from './chats.js';
 // import { isEmpty } from 'lodash-es';
 import type { PrimaryKey } from '@directus/types';
+import { now } from 'lodash-es';
 
 export class AgentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -41,8 +42,16 @@ export class AgentsService extends ItemsService {
 
 		//todo save chat history
 		if(res?.chatMessageId){
-			await chatsService.createOne(res)
-			return ;
+			const resChat = chatsService.readOne(res.chatId)
+
+			if(!resChat){
+				await chatsService.updateOne(res.chatId,{last_access: now()})
+				return;
+			}else{
+				await chatsService.createOne({id: res.chatId, agents: flowId, users: this.accountability?.user,last_access: now()})
+				return ;
+			}
+
 		}
 
 	}

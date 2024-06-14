@@ -15,9 +15,6 @@ columns:
     references:
       table: directus_users
       column: id
-  chatid:
-    type: string
-    nullable: false
   last_access:
     type: timestamp
     default: $now
