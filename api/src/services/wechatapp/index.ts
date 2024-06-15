@@ -169,8 +169,8 @@ export class WechatService{
 	// 		errmsg: '',
 	// 		unionid: '12131321232132213',
 	// 		phone_info: {
-	// 			phoneNumber:'+8613764240535',
-	// 			purePhoneNumber:'13764240535',
+	// 			phoneNumber:'+8613765453435',
+	// 			purePhoneNumber:'13765453435',
 	// 			countryCode	:'+86',
 	// 			watermark: {
 	// 				"timestamp": 1637744274,
