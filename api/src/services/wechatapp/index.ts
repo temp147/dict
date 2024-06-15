@@ -164,6 +164,21 @@ export class WechatService{
 			logger.error(error);
 			return undefined
 		}
+	// 	const res = {
+	// 		errcode: 0,
+	// 		errmsg: '',
+	// 		unionid: '12131321232132213',
+	// 		phone_info: {
+	// 			phoneNumber:'+8613764240535',
+	// 			purePhoneNumber:'13764240535',
+	// 			countryCode	:'+86',
+	// 			watermark: {
+	// 				"timestamp": 1637744274,
+	// 				"appid": "xxxx"
+	// 			}
+	// 		},}
+
+	// 	return res as WxPhoneRes
 	}
 
 	private async getHttpOption (url:URL):Promise<WxTokenRes | undefined> {

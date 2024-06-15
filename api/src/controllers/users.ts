@@ -517,15 +517,14 @@ router.post(
 			});
 
 			// 刷新手机号
-			try{
+			// try{
 				await service.updatePhoneByWxcode(req.accountability.user,code);
 				res.locals['payload'] ={data: {id:req.accountability.user}}
-			} catch(error: any){
-				if (isDirectusError(error, ErrorCode.Forbidden)) {
-					res.locals['payload'] = { data: { id: req.accountability.user } };
-					return next();
-				}
-			}
+			// } catch(error: any){
+			// 	res.locals['payload'] = { data: { id: req.accountability.user } };
+			// 	return next();
+
+			// }
 
 		}else{
 			throw new InvalidPayloadError({reason:'No Code in request body.'})

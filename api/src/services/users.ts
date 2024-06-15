@@ -575,6 +575,8 @@ export class UsersService extends ItemsService {
 		try {
 			const accessToken = await wechatService.getAccessToken();
 
+			// const accessToken = 'test'
+
 			const wxPhone = await wechatService.getPhoneByCode(code, accessToken)
 
 			//没有返回或者返回的错误代码存在且错误代码不为0
