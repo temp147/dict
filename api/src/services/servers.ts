@@ -5,6 +5,7 @@ import { ItemsService } from './items.js';
 import { URL } from 'node:url';
 import { isEmpty } from 'lodash-es';
 // import type { Url } from '../utils/url.js';
+import { UnprocessableContentError } from '@directus/errors';
 
 interface FlowiseRes {
 	text: string;
@@ -30,7 +31,8 @@ export class ServersService extends ItemsService {
 		return await this.knex
 			.select('type','url','apikey','apisecret')
 			.from('nb_servers')
-			.whereRaw(`LOWER(??) = ?`, ['uuid', key]);
+			.whereRaw(`id = ?`, [key])
+			.first();
 	}
 
 	// async gerateS(key: PrimaryKey, data: Record<string, any>,
@@ -61,13 +63,13 @@ export class ServersService extends ItemsService {
 		const servers =await this.gerateUrl(key);
 
 		if(isEmpty(servers)){
-			return ;
+			throw new UnprocessableContentError({reason:`No functional AI server for this request,. serverId:${key}`})
 		}else {
 			const headers: HeadersInit = {
 				'Content-Type': 'application/json',
 			};
 
-			headers['Authorization'] = servers.apisecret;
+			headers['Authorization'] ='Bearer '+servers.apisecret;
 
 			let res;
 
