@@ -7,6 +7,8 @@ import { ChatsService } from './chats.js';
 import type { PrimaryKey } from '@directus/types';
 import { now } from 'lodash-es';
 import { UnprocessableContentError } from '@directus/errors';
+
+
 export class AgentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
 		super('nb_agents', options);
@@ -46,7 +48,7 @@ export class AgentsService extends ItemsService {
 			throw new UnprocessableContentError({reason:`No functional AI server for this request,. flowId:${flowId}`})
 		}else {
 
-				const res =await serversService.sendChat(agentServer?.servers, data);
+				const res =await serversService.sendChats(agentServer?.servers, data);
 
 				const chatsService = new ChatsService({
 				schema: this.schema,
@@ -55,19 +57,19 @@ export class AgentsService extends ItemsService {
 
 				//todo save chat history
 				if(res?.chatMessageId){
-				const resChat = chatsService.readOne(res.chatId);
+					const resChat = chatsService.readOne(res.chatId);
 
-				if(!resChat){
-					await chatsService.updateOne(res.chatId,{last_access: now()})
-					return;
-				}else{
-					await chatsService.createOne({id: res.chatId, agents: flowId, users: this.accountability?.user,last_access: now()})
-					return ;
+					if(!resChat){
+						await chatsService.updateOne(res.chatId,{last_access: now()})
+						return;
+					}else{
+						await chatsService.createOne({id: res.chatId, agents: flowId, users: this.accountability?.user,last_access: now()})
+						return ;
+					}
 				}
-			}
+
+				return ;
 		}
-
-
 
 	}
 

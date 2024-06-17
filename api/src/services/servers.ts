@@ -6,6 +6,9 @@ import { URL } from 'node:url';
 import { isEmpty } from 'lodash-es';
 // import type { Url } from '../utils/url.js';
 import { UnprocessableContentError } from '@directus/errors';
+import { useLogger } from '../logger.js';
+
+const logger = useLogger();
 
 interface FlowiseRes {
 	text: string;
@@ -58,7 +61,7 @@ export class ServersService extends ItemsService {
 		}
 	}
 
-	async sendChat(key:PrimaryKey,message: Partial<Item>[]): Promise<FlowiseRes|undefined>{
+	async sendChats(key:PrimaryKey,message: Partial<Item>[]): Promise<FlowiseRes|undefined>{
 
 		const servers =await this.gerateUrl(key);
 
@@ -69,25 +72,32 @@ export class ServersService extends ItemsService {
 				'Content-Type': 'application/json',
 			};
 
-			headers['Authorization'] ='Bearer '+servers.apisecret;
+			headers['Authorization'] = servers.apisecret;
 
 			let res;
 
-			if(servers.apisecret==='0'){
+			try{
+				if(servers.apisecret==='0'){
 				    res = await fetch(servers.url,{
 					method:'POST',
 					body: JSON.stringify(message),
-				});
-
-				return  res.json() as Promise<FlowiseRes>
-
-			}else {
+					});
+				}else {
 				    res = await fetch(servers.url,{
 					method:'POST',
 					body: JSON.stringify(message),
 					headers,
-				});
+					});
+				}
 
+			}catch(error: any){
+				logger.error(error);
+				return undefined
+			}
+
+			if(!res.ok){
+					throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
 				return  res.json() as Promise<FlowiseRes>
 			}
 		}
