@@ -21,4 +21,6 @@ columns:
     references:
       table: directus_users
       column: id
-
+  name:
+    type: string
+    length: 255

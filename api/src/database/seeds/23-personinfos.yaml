@@ -14,3 +14,18 @@ columns:
   details:
     type: string
     nullable: true
+  name:
+    type: string
+    length: 255
+  phone:
+    type: string
+    length: 255
+  role:
+    type: string
+    length: 255
+  isFirstLogin:
+    type: boolean
+    default: true
+  isApprovePolicy:
+    type: boolean
+    default: false

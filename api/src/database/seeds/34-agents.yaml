@@ -27,3 +27,21 @@ columns:
   type:
     type: string
     length: 255
+  prompt1:
+    type: string
+    length: 255
+  prompt2:
+    type: string
+    length: 255
+  prompt3:
+    type: string
+    length: 255
+  prompt4:
+    type: string
+    length: 255
+  role:
+    type: string
+    length: 255
+  allowupload:
+    type: boolean
+    default: false

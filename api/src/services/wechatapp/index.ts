@@ -77,7 +77,7 @@ export class WechatService{
 		let eventuallySccessToken = '';
 		// let accessToken='';
 		//nb_accesstokens为表
-		const sqlAccessToken = await this.knex('nb_accessToken').select('id','create_time','expires_in','access_token').first();
+		const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
 
 		if(sqlAccessToken != undefined) {
 			const expiresIn = sqlAccessToken.expires_in
@@ -92,7 +92,7 @@ export class WechatService{
 
 				if(accessToken){
 					//存储token
-					await this.knex('nb_accessToken').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
+					await this.knex('nb_accesstokens').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
 					eventuallySccessToken = accessToken.access_token
 				}else{
 					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
@@ -109,7 +109,7 @@ export class WechatService{
   			//
 
 			if (accessToken) {
-				await this.knex('wx_accessToken').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+				await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
 				eventuallySccessToken = accessToken.access_token
 			} else {
 				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
