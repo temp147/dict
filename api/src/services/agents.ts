@@ -1,5 +1,5 @@
 import getDatabase from '../database/index.js';
-import type { AbstractServiceOptions, Item, MutationOptions  } from '../types/index.js';
+import type { AbstractServiceOptions, Item } from '../types/index.js';
 import { ItemsService } from './items.js';
 import { ServersService } from './servers.js';
 import { ChatsService } from './chats.js';
@@ -36,7 +36,7 @@ export class AgentsService extends ItemsService {
 			return res ;
 	};
 
-	async sendChats(flowId: string ,data: Partial<Item>[], opts?: MutationOptions): Promise<void> {
+	async sendChats(flowId: string ,data: Partial<Item>[]): Promise<void> {
 		const serversService = new ServersService({
 			schema: this.schema,
 			accountability: this.accountability,
@@ -48,7 +48,7 @@ export class AgentsService extends ItemsService {
 			throw new UnprocessableContentError({reason:`No functional AI server for this request,. flowId:${flowId}`})
 		}else {
 
-				const res =await serversService.sendChats(agentServer?.servers, data);
+				const res =await serversService.sendChats(agentServer?.servers,flowId, data);
 
 				const chatsService = new ChatsService({
 				schema: this.schema,
