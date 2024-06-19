@@ -34,7 +34,7 @@ router.post(
 		}
 
 		res.locals['payload'] = {data:'ok'};
-		return next()
+		return next();
 	}),
 	respond,
 )
