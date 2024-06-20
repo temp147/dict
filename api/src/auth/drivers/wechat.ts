@@ -104,7 +104,7 @@ export class WechatAuthDriver extends LocalAuthDriver {
 				//todo get user phone number
 				const userEmail = wxOpenId + '@metacause.cn';
 				//add user to the public role
-				const userId= await this.usersService.createOne({email: userEmail, status: 'active', external_identifier: wxOpenId, provider: 'wechat',roles: '7f3c027c-0d17-47fb-988e-89802024c1b6'} )
+				const userId= await this.usersService.createOne({email: userEmail, status: 'active', external_identifier: wxOpenId, provider: 'wechat',role: '7f3c027c-0d17-47fb-988e-89802024c1b6'} )
 				// throw new InvalidCredentialsError();
 				return userId.toString()
 			}
