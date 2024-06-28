@@ -70,14 +70,14 @@ export class WechatService{
 		}
 	}
 
-	async getAccessToken(){
+	async getAccessToken():Promise<string>{
 		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
 		'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
 
 		let eventuallySccessToken = '';
 		// let accessToken='';
 		//nb_accesstokens为表
-		const sqlAccessToken = await this.knex('nb_accessToken').select('id','create_time','expires_in','access_token').first();
+		const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
 
 		if(sqlAccessToken != undefined) {
 			const expiresIn = sqlAccessToken.expires_in
@@ -92,7 +92,7 @@ export class WechatService{
 
 				if(accessToken){
 					//存储token
-					await this.knex('nb_accessToken').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
+					await this.knex('nb_accesstokens').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
 					eventuallySccessToken = accessToken.access_token
 				}else{
 					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
@@ -109,7 +109,7 @@ export class WechatService{
   			//
 
 			if (accessToken) {
-				await this.knex('wx_accessToken').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+				await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
 				eventuallySccessToken = accessToken.access_token
 			} else {
 				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
@@ -145,7 +145,7 @@ export class WechatService{
 		// return res as WxSessionRes
 	}
 
-	async getPhoneNumber(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
+	async getPhoneByCode(jscode: string, access_token: string ): Promise<WxPhoneRes  | undefined>{
 		// https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN
 		const url = new  URL('https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token='+access_token);
 
@@ -163,8 +163,22 @@ export class WechatService{
 		} catch (error: any) {
 			logger.error(error);
 			return undefined
-
 		}
+	// 	const res = {
+	// 		errcode: 0,
+	// 		errmsg: '',
+	// 		unionid: '12131321232132213',
+	// 		phone_info: {
+	// 			phoneNumber:'+8613765453435',
+	// 			purePhoneNumber:'13765453435',
+	// 			countryCode	:'+86',
+	// 			watermark: {
+	// 				"timestamp": 1637744274,
+	// 				"appid": "xxxx"
+	// 			}
+	// 		},}
+
+	// 	return res as WxPhoneRes
 	}
 
 	private async getHttpOption (url:URL):Promise<WxTokenRes | undefined> {

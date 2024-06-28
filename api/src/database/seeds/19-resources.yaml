@@ -71,3 +71,22 @@ columns:
     references:
       table: nb_courses
       column: id
+  favourite:
+    type: integer
+    unsigned: true
+  zan:
+    type: integer
+    unsigned: true
+  activity_type:
+    type: string
+    length: 255
+    nullable: true
+  isActive:
+    type: boolean
+    nullable: false
+    default: true
+  toolURL:
+    type: string
+    length: 255
+    nullable: true
+

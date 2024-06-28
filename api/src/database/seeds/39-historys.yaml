@@ -5,6 +5,8 @@ columns:           #todo disign
     type: uuid
     primary: true
     nullable: false
+  question:
+    type: text
   content:
     type: text
   users:

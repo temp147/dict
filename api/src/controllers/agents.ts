@@ -23,9 +23,18 @@ router.post(
 		});
 
 		// const record = await service.sendChats(req.params['pk']!, req.body);
-		service.sendChats(req.params['pk']!, req.body);
+		try{
+			service.sendChats(req.params['pk']!, req.body);
+		}catch(error:any){
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
 		res.locals['payload'] = {data:'ok'};
-		return next()
+		return next();
 	}),
 	respond,
 )
