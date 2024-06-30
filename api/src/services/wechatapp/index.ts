@@ -89,11 +89,12 @@ export class WechatService{
 			if(isTimeValidate <1 ){
 				//重新获取
 				const accessToken = await this.getHttpOption(url);
+				eventuallySccessToken = accessToken.access_token
 
 				if(accessToken){
 					//存储token
 					await this.knex('nb_accesstokens').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
-					eventuallySccessToken = accessToken.access_token
+
 				}else{
 					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 				}
@@ -106,11 +107,11 @@ export class WechatService{
 		}else{
 			//没有token
 			const accessToken = await this.getHttpOption(url)
-  			//
+			eventuallySccessToken = accessToken.access_token
 
 			if (accessToken) {
 				await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
-				eventuallySccessToken = accessToken.access_token
+
 			} else {
 				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 			 }
