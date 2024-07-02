@@ -1,0 +1,29 @@
+table: nb_goals
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+    nullable: false
+  description:
+    type: string
+    nullable: true
+  period_start:  #所属时间区间开始，例如5月
+    type: timestamp
+    nullable: false
+  period_end:  #所属时间区间结束，例如5月
+    type: timestamp
+    nullable: false
+  period_type:  #所属时间类型, month, quater, half year ,year,
+    type: string
+    nullable: false
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+

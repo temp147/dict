@@ -1,0 +1,23 @@
+table: nb_badgestores
+# 荣誉，徽章模版
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+  description:
+    type: string
+  coverurl: #logo图
+    type: string
+    length: 255
+    nullable: true
+  achieved_taget: #达成值
+    type: integer
+  companies: #属于那个租户
+    type: uuid
+    nullable: false
+    references:
+      table: nb_companies
+      column: id

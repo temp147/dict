@@ -1,0 +1,33 @@
+table: nb_notes
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+  description:
+    type: string
+    nullable: true
+  lastupdate: #最后更新时间
+    type: timestamp
+  files: #上传的附件
+    type: uuid
+    references:
+      table: directus_files
+      column: id
+  summary:  #总结
+    type: text
+  goals:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_goals
+      column: id
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
