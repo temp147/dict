@@ -1,0 +1,13 @@
+table: nb_calendars
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  date:
+    type: timestamp
+  description: #今日宜XXX
+    type: string
+    nullable: true
+

@@ -27,6 +27,9 @@ columns:
     type: timestamp
   tags: #标签
     type: json
+  hide: #是否隐藏
+    type: boolean
+    default: false
   goals:
     type: uuid
     nullable: false

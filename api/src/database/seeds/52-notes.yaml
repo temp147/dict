@@ -5,9 +5,9 @@ columns:
     type: uuid
     primary: true
     nullable: false
-  name:
+  name: #文件名
     type: string
-  description:
+  description: #概览
     type: string
     nullable: true
   lastupdate: #最后更新时间
@@ -19,6 +19,12 @@ columns:
       column: id
   summary:  #总结
     type: text
+  tags: #标签
+    type: json
+  kownledge_point: # 知识点
+    type: json
+  suggestion: #推荐的任务
+    type: json
   goals:
     type: uuid
     nullable: false
@@ -30,4 +36,10 @@ columns:
     nullable: false
     references:
       table: directus_users
+      column: id
+  tasks:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_tasks
       column: id
