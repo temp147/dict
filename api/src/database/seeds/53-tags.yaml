@@ -5,8 +5,10 @@ columns:
     type: uuid
     primary: true
     nullable: false
-  name:
-    type: timestamp
+  name :
+    type: string
+  color:
+    type: string
   users:
     type: uuid
     nullable: false
