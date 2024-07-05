@@ -1,5 +1,6 @@
 table: nb_badgestores
 # 荣誉，徽章模版
+# TODO: 添加行业
 columns:
   id:
     type: uuid

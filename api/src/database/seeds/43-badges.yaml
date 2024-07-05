@@ -13,7 +13,7 @@ columns:
     type: timestamp
     nullable: false
   achieved_progress: #获取进展
-    type: timestamp
+    type: integer
     nullable: false
   badgestores: #对应徽章模版
     type: uuid

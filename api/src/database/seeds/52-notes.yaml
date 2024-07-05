@@ -8,7 +8,7 @@ columns:
   name: #文件名
     type: string
   description: #概览
-    type: string
+    type: text
     nullable: true
   lastupdate: #最后更新时间
     type: timestamp
@@ -18,7 +18,7 @@ columns:
       table: directus_files
       column: id
   summary:  #总结
-    type: text
+    type: json
   tags: #标签
     type: json
   kownledge_point: # 知识点
