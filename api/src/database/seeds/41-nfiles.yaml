@@ -1,0 +1,25 @@
+table: nb_nfiles
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+  type:
+    type: string
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  etags:
+    type: string
+  size:
+    type: string
+  bucket:
+    type: string
+  path:
+    type: string

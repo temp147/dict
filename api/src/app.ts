@@ -54,6 +54,7 @@ import surveysRouter from './controllers/surveys.js';
 import chatsRouter from './controllers/chats.js';
 import agentsRouter from './controllers/agents.js';
 import serversRouter from './controllers/servers.js';
+import nfilesRouter from './controllers/nfiles.js';
 
 import {
 	isInstalled,
@@ -328,6 +329,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/utils', utilsRouter);
 	app.use('/versions', versionsRouter);
 	app.use('/webhooks', webhooksRouter);
+	app.use('/items/nb_nfiles', nfilesRouter);
 	// app.use('/resources', resourcesRouter);
 
 
