@@ -77,46 +77,18 @@ export class WechatService{
 		let eventuallySccessToken = '';
 		// let accessToken='';
 		//nb_accesstokens为表
-		const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
+		// const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
+		const accessToken = await this.getHttpOption(url)
+		eventuallySccessToken = accessToken.access_token
 
-		if(sqlAccessToken != undefined) {
-			const expiresIn = sqlAccessToken.expires_in
-			const oldTime = new Date(sqlAccessToken.create_time).getTime();
-			const newTime = (new Date()).getTime();
-			const isTimeValidate = ((newTime - oldTime)/1000-expiresIn)/60;
-
-			//已经失效了或有效时间小于1M‘。
-			if(isTimeValidate <1 ){
-				//重新获取
-				const accessToken = await this.getHttpOption(url);
-
-				if(accessToken){
-					//存储token
-					await this.knex('nb_accesstokens').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
-					eventuallySccessToken = accessToken.access_token
-				}else{
-					throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
-				}
-
-				return eventuallySccessToken
-			}else{
-				eventuallySccessToken = sqlAccessToken.access_token
-				return eventuallySccessToken
+		if (accessToken) {
+			await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+		} else {
+			throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
 			}
-		}else{
-			//没有token
-			const accessToken = await this.getHttpOption(url)
-  			//
 
-			if (accessToken) {
-				await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
-				eventuallySccessToken = accessToken.access_token
-			} else {
-				throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
-			 }
+		return eventuallySccessToken;
 
-			 return  eventuallySccessToken
-		}
 	};
 
 			//获取用户的UUID
