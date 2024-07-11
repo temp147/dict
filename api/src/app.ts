@@ -64,6 +64,7 @@ import calendarsRouter from './controllers/calendars.js';
 import notesRouter from './controllers/notes.js';
 import tagsRouter from './controllers/tags.js';
 import serversRouter from './controllers/servers.js';
+import nfilesRouter from './controllers/nfiles.js';
 
 import {
 	isInstalled,
@@ -323,6 +324,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_calendars', calendarsRouter);
 	app.use('/items/nb_notes', notesRouter);
 	app.use('/items/nb_tags', tagsRouter);
+	app.use('/items/nb_nfiles', nfilesRouter);
 
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
