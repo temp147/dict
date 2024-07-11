@@ -21,10 +21,8 @@ columns:
     type: integer
   timecost: #耗时
     type: integer
-  nextstart: #下一次开始时间
-    type: timestamp
-  nextend:   #下一次结束时间
-    type: timestamp
+  todos: #后续的行动
+    type: json
   tags: #标签
     type: json
   hide: #是否隐藏
