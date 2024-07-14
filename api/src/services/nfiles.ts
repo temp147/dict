@@ -4,10 +4,10 @@ import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 import OSS from 'ali-oss';
 import { useEnv } from '../env.js';
-import { useLogger } from '../logger.js';
+// import { useLogger } from '../logger.js';
 
 const env = useEnv();
-const logger = useLogger();
+// const logger = useLogger();
 // import OSS from 'ali-oss'
 
 

@@ -80,7 +80,8 @@ export class WechatService{
 		// const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
 		// logger.info(sqlAccessToken);
 		const accessToken = await this.getHttpOption(url)
-		eventuallySccessToken = accessToken.access_token
+
+		eventuallySccessToken = accessToken?.access_token || '';
 
 		if (accessToken) {
 			await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
