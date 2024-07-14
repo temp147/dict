@@ -53,6 +53,16 @@ import resourcesRouter from './controllers/resourses.js';
 import surveysRouter from './controllers/surveys.js';
 import chatsRouter from './controllers/chats.js';
 import agentsRouter from './controllers/agents.js';
+import badgestoresRouter from './controllers/badgestores.js';
+import badgesRouter from './controllers/badges.js';
+import goalsRouter from './controllers/goals.js';
+import keyresultsRouter from './controllers/keyresults.js';
+import tasksRouter from './controllers/tasks.js';
+import tasklogsRouter from './controllers/tasklogs.js';
+import benefitsRouter from './controllers/benefits.js';
+import calendarsRouter from './controllers/calendars.js';
+import notesRouter from './controllers/notes.js';
+import tagsRouter from './controllers/tags.js';
 import serversRouter from './controllers/servers.js';
 import nfilesRouter from './controllers/nfiles.js';
 
@@ -304,6 +314,17 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_agents', agentsRouter);
 	app.use('/items/nb_servers', serversRouter);
 	app.use('/items/nb_supervisors', supervisorsRouter);
+	app.use('/items/nb_badgestores', badgestoresRouter);
+	app.use('/items/nb_badges', badgesRouter);
+	app.use('/items/nb_goals', goalsRouter);
+	app.use('/items/nb_keyresults', keyresultsRouter);
+	app.use('/items/nb_tasks', tasksRouter);
+	app.use('/items/nb_tasklogs', tasklogsRouter);
+	app.use('/items/nb_benefits', benefitsRouter);
+	app.use('/items/nb_calendars', calendarsRouter);
+	app.use('/items/nb_notes', notesRouter);
+	app.use('/items/nb_tags', tagsRouter);
+	app.use('/items/nb_nfiles', nfilesRouter);
 
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);

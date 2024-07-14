@@ -4,10 +4,17 @@ import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 import OSS from 'ali-oss';
 import { useEnv } from '../env.js';
+<<<<<<< HEAD
 // import { useLogger } from '../logger.js';
 
 const env = useEnv();
 // const logger = useLogger();
+=======
+import { useLogger } from '../logger.js';
+
+const env = useEnv();
+const logger = useLogger();
+>>>>>>> fea-activity
 // import OSS from 'ali-oss'
 
 

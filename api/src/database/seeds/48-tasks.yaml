@@ -1,0 +1,42 @@
+table: nb_tasks
+
+columns:
+  id:
+    increments: true
+    primary: true
+  name:
+    type: string
+    length: 255
+    nullable: false
+  description:
+    type: string
+    nullable: true
+  lastupdate: #最后更新时间
+    type: timestamp
+  process:  #进度
+    type: integer
+  priority:  #优先级
+    type: integer
+  cost: #费用
+    type: integer
+  timecost: #耗时
+    type: integer
+  todos: #后续的行动
+    type: json
+  tags: #标签
+    type: json
+  hide: #是否隐藏
+    type: boolean
+    default: false
+  goals:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_goals
+      column: id
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id

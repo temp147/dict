@@ -78,6 +78,7 @@ export class WechatService{
 		// let accessToken='';
 		//nb_accesstokens为表
 		// const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
+<<<<<<< HEAD
 		// logger.info(sqlAccessToken);
 		const accessToken = await this.getHttpOption(url)
 
@@ -131,6 +132,19 @@ export class WechatService{
 
 		// 	 return  eventuallySccessToken
 		// }
+=======
+		const accessToken = await this.getHttpOption(url)
+		eventuallySccessToken = accessToken.access_token
+
+		if (accessToken) {
+			await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+		} else {
+			throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
+			}
+
+		return eventuallySccessToken;
+
+>>>>>>> fea-activity
 	};
 
 			//获取用户的UUID

@@ -1,0 +1,29 @@
+table: nb_badges
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+  description:
+    type: string
+  achieved_at: #获取时间
+    type: timestamp
+    nullable: false
+  achieved_progress: #获取进展
+    type: integer
+    nullable: false
+  badgestores: #对应徽章模版
+    type: uuid
+    nullable: false
+    references:
+      table: nb_badgestores
+      column: id
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id

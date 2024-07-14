@@ -4,9 +4,9 @@ import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 
 
-export class AuthsService extends ItemsService {
+export class BadgestoresService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
-		super('nb_auths', options);
+		super('nb_badgestores', options);
 
 		this.knex = options.knex || getDatabase();
 		this.accountability = options.accountability || null;
