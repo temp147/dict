@@ -9,6 +9,8 @@ import { MetaService } from '../services/meta.js';
 import type { PrimaryKey } from '../types/index.js';
 import asyncHandler from '../utils/async-handler.js';
 import { sanitizeQuery } from '../utils/sanitize-query.js';
+import { useLogger } from '../logger.js';
+
 
 const router = express.Router();
 
@@ -208,6 +210,9 @@ router.get(
 		// if (!req.accountability?.user) {
 		// 	throw new InvalidCredentialsError();
 		// }
+
+		// const logger = useLogger();
+
 		const service= new NfilesService({
 			accountability: req.accountability,
 			schema: req.schema,
@@ -222,6 +227,44 @@ router.get(
 
 		// await service.updatePhoneByWxcode(req.accountability.user);
 		// res.locals['payload'] ={data: {id:req.accountability.user}}
+
+		return next();
+	}),
+	respond,
+)
+
+router.get(
+	'/oss/analyzefile/:pk',
+	asyncHandler(async(req, res, next)=>{
+		// const code = req.body.code;
+
+		//验证用户是否存在
+		// if (!req.accountability?.user) {
+		// 	throw new InvalidCredentialsError();
+		// }
+		const logger = useLogger();
+
+		const service= new NfilesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		})
+
+		const file = await service.readOne(req.params['pk']!, req.sanitizedQuery);
+
+		// logger.error(`file:${file['path']}`);
+
+
+		const bucket = file['bucket'];
+		const filepath = file['path'];
+		const filename = file['name'];
+		const fileurl = await service.getOssFileUrl(bucket, filepath);
+		// logger.info(`fileurl:${fileurl}`);
+		const record = await service.analyzeOssFile(fileurl, filename);
+		// logger.info(`record:${record}`);
+
+		res.locals['payload'] = { data: record || null };
+
+
 
 		return next();
 	}),
