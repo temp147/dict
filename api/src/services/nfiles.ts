@@ -85,7 +85,9 @@ export class NfilesService extends ItemsService {
 
 				const users = this.accountability?.user;
 
-				await this.knex('nb_notes').insert({name: filepath,description:fileAnalyzeObj['summary'],tags:tags, suggestion:suggestions,users:users ,files:nfileid, id: randomUUID()}) ;
+				const timestamp = new Date().toISOString();
+
+				await this.knex('nb_notes').insert({name: filepath,description:fileAnalyzeObj['summary'],tags:tags, suggestion:suggestions,users:users ,files:nfileid,timestamp:timestamp, id: randomUUID()}) ;
 			}
 
 			return 'success'
