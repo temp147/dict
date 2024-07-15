@@ -20,6 +20,7 @@ interface FileAnalyzeRes {
   keywords: string;
   summary: string;
   todolist: string; // 根据实际返回的数据结构定义具体类型
+  chaptersummary: string;
 };
 
 export class NfilesService extends ItemsService {
@@ -82,12 +83,36 @@ export class NfilesService extends ItemsService {
 				const fileAnalyzeObj = await res.json() as FileAnalyzeRes;
 				const suggestions = {suggestion:fileAnalyzeObj['todolist'].split('。')};
 				const tags = {tags:fileAnalyzeObj['keywords'].split(', ')};
+				const chaptersummary = fileAnalyzeObj['chaptersummary'].split('; ');
+				const summary = {summary:[{}]}
+
+				chaptersummary.forEach(item=>{
+					const chapter = item.split(': ');
+					const chaptertitle = chapter[0]?chapter[0]:'';
+					const chaptercontent = chapter[1]?chapter[1]:'';
+					const row = {chaptertitle:chaptertitle, chaptercontent:chaptercontent};
+
+					summary['summary'].push(row);
+				})
 
 				const users = this.accountability?.user;
 
 				const timestamp = new Date().toISOString();
 
-				await this.knex('nb_notes').insert({name: filepath,description:fileAnalyzeObj['summary'],tags:tags, suggestion:suggestions,users:users ,files:nfileid,timestamp:timestamp,category:category,filetype:filetype, id: randomUUID()}) ;
+				await this.knex('nb_notes').insert(
+					{
+						name: filepath,
+						description:fileAnalyzeObj['summary'],
+						tags:tags,
+						suggestion:suggestions,
+						users:users ,
+						files:nfileid,
+						timestamp:timestamp,
+						category:category,
+						filetype:filetype,
+						summary:summary,
+						id: randomUUID()
+					}) ;
 			}
 
 			return 'success'
