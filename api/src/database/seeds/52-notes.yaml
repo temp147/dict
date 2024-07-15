@@ -43,3 +43,7 @@ columns:
     references:
       table: nb_tasks
       column: id
+  category: #类型
+    type: string
+  filetype: #文件类型
+    type: string
