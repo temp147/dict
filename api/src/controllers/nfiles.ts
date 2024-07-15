@@ -257,9 +257,10 @@ router.get(
 		const bucket = file['bucket'];
 		const filepath = file['path'];
 		const filename = file['name'];
+		const nfileid = file['id']
 		const fileurl = await service.getOssFileUrl(bucket, filepath);
 		// logger.info(`fileurl:${fileurl}`);
-		const record = await service.analyzeOssFile(fileurl, filename);
+		const record = await service.analyzeOssFile(fileurl, filename,nfileid);
 		// logger.info(`record:${record}`);
 
 		res.locals['payload'] = { data: record || null };

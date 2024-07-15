@@ -53,7 +53,7 @@ export class NfilesService extends ItemsService {
 
 	}
 
-	async analyzeOssFile( fileurl:string, filepath:string): Promise<string | undefined>{
+	async analyzeOssFile( fileurl:string, filepath:string, nfileid:string): Promise<string | undefined>{
 
 		const url = 'https://emotion.metacause.cn/analyze'
 
@@ -85,7 +85,7 @@ export class NfilesService extends ItemsService {
 
 				const users = this.accountability?.user;
 
-				await this.knex('nb_notes').insert({name: filepath,description:fileAnalyzeObj['summary'],tags:tags, suggestion:suggestions,users:users , id: randomUUID()}) ;
+				await this.knex('nb_notes').insert({name: filepath,description:fileAnalyzeObj['summary'],tags:tags, suggestion:suggestions,users:users ,files:nfileid, id: randomUUID()}) ;
 			}
 
 			return 'success'
