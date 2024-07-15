@@ -88,9 +88,10 @@ export class NfilesService extends ItemsService {
 
 				chaptersummary.forEach(item=>{
 					const chapter = item.split(': ');
-					const chaptertitle = chapter[0]?chapter[0]:'';
-					const chaptercontent = chapter[1]?chapter[1]:'';
-					const row = {chaptertitle:chaptertitle, chaptercontent:chaptercontent};
+					const chapterindex = chapter[0]?chapter[0]:'';
+					const chaptertitle = chapter[1]?chapter[1]:'';
+					const chaptercontent = chapter[2]?chapter[2]:'';
+					const row = {chapterindex:chapterindex,chaptertitle:chaptertitle, chaptercontent:chaptercontent};
 
 					summary['summary'].push(row);
 				})
