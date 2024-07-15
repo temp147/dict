@@ -10,7 +10,7 @@ columns:
   description: #概览
     type: text
     nullable: true
-  lastupdate: #最后更新时间
+  timestamp: #最后更新时间
     type: timestamp
   files: #上传的附件
     type: uuid
