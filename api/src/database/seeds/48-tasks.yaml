@@ -40,3 +40,9 @@ columns:
     references:
       table: directus_users
       column: id
+  notes:
+    type: uuid
+    nullable: false
+    references:
+      table: nb_notes
+      column: id

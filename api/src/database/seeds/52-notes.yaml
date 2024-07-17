@@ -47,3 +47,5 @@ columns:
     type: string
   filetype: #文件类型
     type: string
+  aliTaskID: #ALI通义听悟任务ID
+    type: string

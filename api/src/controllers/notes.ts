@@ -199,4 +199,32 @@ router.delete(
 	respond,
 );
 
+router.post(
+	'/getTingwuCallback',
+	asyncHandler(async (req, res, next) => {
+		const service = new NotesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			if(req.body){
+				service.getTingwuCallback(req.body);
+				res.locals['payload'] = { msg: "ok" };
+			}
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
 export default router;
