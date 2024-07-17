@@ -5,6 +5,24 @@ import { ItemsService } from './items.js';
 import { useLogger } from '../logger.js';
 
 
+interface SummaryItem {
+    Id: number;
+    Start: number;
+    End: number;
+    Headline: string;
+    Summary: string;
+}
+
+interface AutoChaptersResponse {
+    AutoChapters: SummaryItem[];
+}
+
+interface AISuggestionRes {
+	// 假设的字段，根据实际情况进行调整
+	todolist: string; // 根据实际返回的数据结构定义具体类型
+  };
+
+
 export class NotesService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
 		super('nb_notes', options);
@@ -34,6 +52,8 @@ export class NotesService extends ItemsService {
 				let description: string | undefined; // 在这里声明 description 变量
 				let keywords: object | undefined;
 				let summary: object | undefined;
+				let summaryText: string | undefined;
+				// let suggestion: object | undefined;
 
 				const resMeeting = await fetch(meetingAssistUrl, {
 					method: 'GET'
@@ -49,12 +69,19 @@ export class NotesService extends ItemsService {
 					method: 'GET'
 				});
 
-				if(resChapter.ok){
-					const chapterObj = await resChapter.json() as any;
-					summary = {summary: chapterObj['AutoChapters'] }
-					logger.info(`summary:${summary}`);
+				if (resChapter.ok) {
+                    const chapterObj = await resChapter.json() as AutoChaptersResponse;
+                    const summaryItems = chapterObj.AutoChapters;
+					summary = { summary: chapterObj['AutoChapters'] as any};
 
-				}
+
+                    if (Array.isArray(summaryItems)) {
+                        summaryText = summaryItems.map(item => `${item.Headline} ${item.Summary}`).join(' ');
+                        // logger.info(`summaryText:${summaryText}`);
+                    } else {
+                        logger.error('AutoChapters is not an array');
+                    }
+                }
 
 				const resSummary = await fetch(summaryUrl, {
 					method: 'GET'
@@ -64,16 +91,20 @@ export class NotesService extends ItemsService {
 					const summaryObj = await resSummary.json() as any;
 					description = summaryObj['Summarization']['ParagraphSummary']
 					logger.info(`description:${description}`);
+
 				}
+				// const text = description+summary['summary'].map(item => `${item.Headline} ${item.Summary}`).join(' ');
+				// text = description+summaryText;
 
-				logger.info(`description:${description}`);
+				const suggestion = await this.getAISuggestion(summaryText?summaryText:'');
+				// logger.info(`suggestion:${suggestion['suggestion'][0]}`);
+
+				// logger.info(`description:${description}`);
 
 
 
-				await this.knex('nb_notes').update({description:description,tags:keywords,summary:summary}).where({aliTaskID:aliTaskID});
+				await this.knex('nb_notes').update({description:description,tags:keywords,summary:summary,suggestion:suggestion}).where({aliTaskID:aliTaskID});
 			}
-
-
 
 			return 'success'
 
@@ -84,5 +115,42 @@ export class NotesService extends ItemsService {
 		}
 
 
+	}
+
+	async getAISuggestion( text:string): Promise<object | undefined>{
+		const url = 'https://emotion.metacause.cn/getSuggestion'
+
+		const logger = useLogger();
+
+		const body = {
+			text: text,
+		}
+
+		const headers = {
+			'Content-Type': 'application/json',
+		}
+
+		try{
+			const res = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers,
+			});
+
+			logger.info(`res:${res}`);
+
+			if(res.ok){
+				const aiSuggestionObj = await res.json() as AISuggestionRes;
+				logger.info(`aiSuggestionObj:${aiSuggestionObj['todolist']}`);
+				const suggestion = {suggestion:aiSuggestionObj['todolist'].split('；')};
+				logger.info(`suggestion:${suggestion['suggestion'][0]}`);
+
+				return suggestion
+
+			}
+		}catch(error: any){
+			logger.error(error);
+			return undefined;
+		}
 	}
 }
