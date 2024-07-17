@@ -142,7 +142,7 @@ export class NotesService extends ItemsService {
 			if(res.ok){
 				const aiSuggestionObj = await res.json() as AISuggestionRes;
 				logger.info(`aiSuggestionObj:${aiSuggestionObj['todolist']}`);
-				const suggestion = {suggestion:aiSuggestionObj['todolist'].split('；')};
+				const suggestion = {suggestion:aiSuggestionObj['todolist'].split(';')};
 				logger.info(`suggestion:${suggestion['suggestion'][0]}`);
 
 				return suggestion
