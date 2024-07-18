@@ -81,9 +81,9 @@ export class NfilesService extends ItemsService {
 
 			if(res.ok){
 				const fileAnalyzeObj = await res.json() as FileAnalyzeRes;
-				const suggestions = {suggestion:fileAnalyzeObj['todolist'].split('。')};
+				const suggestions = {suggestion:fileAnalyzeObj['todolist'].split(';')};
 				const tags = {tags:fileAnalyzeObj['keywords'].split(', ')};
-				const chaptersummary = fileAnalyzeObj['chaptersummary'].split('; ');
+				const chaptersummary = fileAnalyzeObj['chaptersummary'].split(';');
 				const summary = {summary:[{}]}
 
 				chaptersummary.forEach(item=>{
@@ -99,6 +99,7 @@ export class NfilesService extends ItemsService {
 				const users = this.accountability?.user;
 
 				const timestamp = new Date().toISOString();
+
 
 				await this.knex('nb_notes').insert(
 					{
