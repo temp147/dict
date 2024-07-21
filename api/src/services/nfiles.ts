@@ -81,10 +81,20 @@ export class NfilesService extends ItemsService {
 
 			if(res.ok){
 				const fileAnalyzeObj = await res.json() as FileAnalyzeRes;
-				const suggestions = {suggestion:fileAnalyzeObj['todolist'].split(';')};
+				const suggestionsList = fileAnalyzeObj['todolist'].split(';');
+				const suggestions = {suggestion:[{}]}
 				const tags = {tags:fileAnalyzeObj['keywords'].split(', ')};
 				const chaptersummary = fileAnalyzeObj['chaptersummary'].split(';');
 				const summary = {summary:[{}]}
+
+				suggestionsList.forEach(item=>{
+					const suggestion = item.split(': ');
+					const title = suggestion[0]?suggestion[0]:'';
+					const content = suggestion[1]?suggestion[1]:'';
+					const row = {title:title,content:content};
+
+					suggestions['suggestion'].push(row);
+				})
 
 				chaptersummary.forEach(item=>{
 					const chapter = item.split(': ');

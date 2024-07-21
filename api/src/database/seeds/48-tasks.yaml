@@ -46,3 +46,7 @@ columns:
     references:
       table: nb_notes
       column: id
+  startdate: #开始时间
+    type: timestamp
+  enddate: #结束时间
+    type: timestamp
