@@ -63,6 +63,7 @@ export class NfilesService extends ItemsService {
 		const body = {
 			url: fileurl,
 			filepath: filepath,
+			filetype: filetype
 		}
 
 		const headers = {
