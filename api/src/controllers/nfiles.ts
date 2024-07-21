@@ -274,4 +274,40 @@ router.get(
 	respond,
 )
 
+router.get(
+	'/oss/analyzeweb/:pk',
+	asyncHandler(async(req, res, next)=>{
+
+		const logger = useLogger();
+
+		const service= new NfilesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		})
+
+		const file = await service.readOne(req.params['pk']!, req.sanitizedQuery);
+
+		// logger.error(`file:${file['path']}`);
+
+
+		const url = file['url'];
+		const filepath = file['path'];
+		const filename = file['name'];
+		const nfileid = file['id']
+		const category = file['category'];
+		const type = file['type'];
+		const filetype = file['filetype'];
+		// const fileurl = await service.getOssFileUrl(bucket, filepath);
+		const record = await service.analyzeWeb(url, filename,nfileid,category,filetype,type);
+		// logger.info(`record:${record}`);
+
+		res.locals['payload'] = { data: record || null };
+
+
+
+		return next();
+	}),
+	respond,
+)
+
 export default router;

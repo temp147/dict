@@ -17,6 +17,7 @@ const env = useEnv();
 
 interface FileAnalyzeRes {
   // 假设的字段，根据实际情况进行调整
+  title: string;
   keywords: string;
   summary: string;
   todolist: string; // 根据实际返回的数据结构定义具体类型
@@ -51,6 +52,90 @@ export class NfilesService extends ItemsService {
 		  const url = client.signatureUrl(filepath);
 
 		  return url;
+
+		}
+
+	async analyzeWeb( fileurl:string, filepath:string, nfileid:string,category:string, filetype:string,type:string): Promise<string | undefined>{
+		const url = 'https://emotion.metacause.cn/webanalyze'
+
+		const logger = useLogger();
+
+		const body = {
+			url: fileurl,
+			filepath: filepath,
+			filetype: filetype
+		}
+
+		const headers = {
+			'Content-Type': 'application/json',
+		}
+		// const OSS = require('ali-oss');
+
+		try{
+			const res = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers,
+			});
+
+			logger.info(`res:${res}`);
+
+			if(res.ok){
+				const fileAnalyzeObj = await res.json() as FileAnalyzeRes;
+				const title = fileAnalyzeObj['title']
+				const suggestionsList = fileAnalyzeObj['todolist'].split(';');
+				const suggestions = {suggestion:[{}]}
+				const tags = {tags:fileAnalyzeObj['keywords'].split(', ')};
+				const chaptersummary = fileAnalyzeObj['chaptersummary'].split(';');
+				const summary = {summary:[{}]}
+
+				suggestionsList.forEach(item=>{
+					const suggestion = item.split(': ');
+					const title = suggestion[0]?suggestion[0]:'';
+					const content = suggestion[1]?suggestion[1]:'';
+					const row = {title:title,content:content};
+
+					suggestions['suggestion'].push(row);
+				})
+
+				chaptersummary.forEach(item=>{
+					const chapter = item.split(': ');
+					const chapterindex = chapter[0]?chapter[0]:'';
+					const chaptertitle = chapter[1]?chapter[1]:'';
+					const chaptercontent = chapter[2]?chapter[2]:'';
+					const row = {chapterindex:chapterindex,chaptertitle:chaptertitle, chaptercontent:chaptercontent};
+
+					summary['summary'].push(row);
+				})
+
+				const users = this.accountability?.user;
+
+				const timestamp = new Date().toISOString();
+
+
+				await this.knex('nb_notes').insert(
+					{
+						name: title,
+						description:fileAnalyzeObj['summary'],
+						tags:tags,
+						suggestion:suggestions,
+						users:users ,
+						files:nfileid,
+						timestamp:timestamp,
+						category:category,
+						filetype:type,
+						summary:summary,
+						id: randomUUID()
+					}) ;
+			}
+
+			return 'success'
+
+		}catch(error: any){
+			logger.error(error);
+			return undefined;
+
+		}
 
 	}
 
