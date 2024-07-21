@@ -54,7 +54,7 @@ export class NfilesService extends ItemsService {
 
 	}
 
-	async analyzeOssFile( fileurl:string, filepath:string, nfileid:string,category:string, filetype:string): Promise<string | undefined>{
+	async analyzeOssFile( fileurl:string, filepath:string, nfileid:string,category:string, filetype:string,type:string): Promise<string | undefined>{
 
 		const url = 'https://emotion.metacause.cn/analyze'
 
@@ -122,7 +122,7 @@ export class NfilesService extends ItemsService {
 						files:nfileid,
 						timestamp:timestamp,
 						category:category,
-						filetype:filetype,
+						filetype:type,
 						summary:summary,
 						id: randomUUID()
 					}) ;
