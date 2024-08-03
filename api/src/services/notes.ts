@@ -105,6 +105,8 @@ export class NotesService extends ItemsService {
 
 				// logger.info(`description:${description}`);
 
+				this.subscribeWeixin();
+
 
 
 				await this.knex('nb_notes').update({description:description,tags:keywords,summary:summary,suggestion:suggestion}).where({aliTaskID:aliTaskID});
@@ -146,28 +148,35 @@ export class NotesService extends ItemsService {
 
 		const timestamp = new Date().toISOString();
 
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+
+		const datestr = `${year}-${month}-${day}`;
+
 		logger.info(`external_identifier:${external_identifier['external_identifier']}`);
 		// logger.info(`users:${users}`)
 
 		const body = {
-				"touser": external_identifier['external_identifier'],
-				"template_id": "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
-				"page": "pages/tools/WorkNote/filelist",
-				"data": {
-					"name2": {
-						"value": "文件分析"
+				touser: external_identifier['external_identifier'],
+				template_id: "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
+				page: "pages/tools/WorkNote/filelist",
+				data: {
+					name2: {
+						value: "文件分析"
 					},
-					"thing3": {
-						"value": "文件会议纪要已经分析完毕，请查看"
+					thing3: {
+						value: "文件会议纪要已经分析完毕，请查看"
 					},
-					"date4": {
-						"value": timestamp
+					date4: {
+						value: datestr
 					} ,
-					"phrase6": {
-						"value": "已完成"
+					phrase6: {
+						value: "已完成"
 					}
 				},
-				"miniprogram_state":"developer"
+				miniprogram_state:"formal"
 		}
 
 		const url = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token='+wxAccessToken;
@@ -176,6 +185,8 @@ export class NotesService extends ItemsService {
 			'Content-Type': 'application/json',
 		}
 
+		logger.info(`body:${JSON.stringify(body)}`)
+
 		try{
 			const res = await fetch(url, {
 				method: 'POST',
@@ -183,7 +194,7 @@ export class NotesService extends ItemsService {
 				headers,
 			});
 
-			logger.info(`res:${res}`);
+			logger.info(`res:${JSON.stringify(res)}`);
 
 			if(res.ok){
 				return 'success'

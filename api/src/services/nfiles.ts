@@ -6,6 +6,7 @@ import OSS from 'ali-oss';
 import { useEnv } from '../env.js';
 import { useLogger } from '../logger.js';
 import { randomUUID } from 'crypto';
+import { NotesService } from './notes.js';
 import type { Knex } from 'knex';
 
 // import { useLogger } from '../logger.js';
@@ -112,6 +113,8 @@ export class NfilesService extends ItemsService {
 
 				const timestamp = new Date().toISOString();
 
+				this.notifyUser();
+
 
 				await this.knex('nb_notes').insert(
 					{
@@ -196,6 +199,8 @@ export class NfilesService extends ItemsService {
 
 				const timestamp = new Date().toISOString();
 
+				this.notifyUser();
+
 
 				await this.knex('nb_notes').insert(
 					{
@@ -222,6 +227,26 @@ export class NfilesService extends ItemsService {
 		}
 
 
+	}
+
+	async notifyUser(): Promise<string | undefined>{
+		const logger = useLogger();
+
+		// const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
+		// 	'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
+
+		const notesService = new NotesService({
+			schema: this.schema,
+			knex: this.knex
+		})
+
+		try{
+			notesService.subscribeWeixin();
+			return 'success'
+		}catch(error: any){
+			logger.error(error);
+			return undefined;
+		}
 	}
 
 
