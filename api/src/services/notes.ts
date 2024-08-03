@@ -3,7 +3,11 @@ import getDatabase from '../database/index.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 import { useLogger } from '../logger.js';
+import { WechatService } from './wechatapp/index.js';
+import { useEnv } from '../env.js';
 
+
+const env = useEnv();
 
 interface SummaryItem {
     Id: number;
@@ -115,6 +119,68 @@ export class NotesService extends ItemsService {
 		}
 
 
+	}
+
+	async subscribeWeixin(): Promise<string | undefined>{
+		const logger = useLogger();
+
+		// const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
+		// 	'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
+
+		const wechatService = new WechatService({
+			schema: this.schema,
+			knex: this.knex
+		})
+
+		const wxAccessToken = await wechatService.getAccessToken();
+
+		const users = this.accountability?.user;
+
+		const timestamp = new Date().toISOString();
+
+		const body = {
+				"touser": users?['externalid'] : '',
+				"template_id": "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
+				"page": "pages/tools/WorkNote/filelist",
+				"data": {
+					"name2": {
+						"value": "文件分析"
+					},
+					"thing3": {
+						"value": "文件会议纪要已经分析完毕，请查看"
+					},
+					"date4": {
+						"value": timestamp
+					} ,
+					"phrase6": {
+						"value": "已完成"
+					}
+				},
+				"miniprogram_state":"developer"
+		}
+
+		const url = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token='+wxAccessToken;
+
+		const headers = {
+			'Content-Type': 'application/json',
+		}
+
+		try{
+			const res = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers,
+			});
+
+			logger.info(`res:${res}`);
+
+			if(res.ok){
+				return 'success'
+			}
+		}catch(error: any){
+			logger.error(error);
+			return undefined;
+		}
 	}
 
 	async getAISuggestion( text:string): Promise<object | undefined>{

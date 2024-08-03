@@ -227,4 +227,31 @@ router.post(
 	respond,
 );
 
+router.get(
+	'/wxNotifyUser',
+	asyncHandler(async (req, res, next) => {
+		const service = new NotesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			service.subscribeWeixin();
+			res.locals['payload'] = { msg: "ok" };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
+
 export default router;
