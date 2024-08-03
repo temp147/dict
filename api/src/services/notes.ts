@@ -138,10 +138,19 @@ export class NotesService extends ItemsService {
 
 		const users = this.accountability?.user;
 
+		const external_identifier = await this.knex
+			.select('external_identifier')
+			.from('directus_users')
+			.whereRaw('id = ?', [ users])
+			.first();
+
 		const timestamp = new Date().toISOString();
 
+		logger.info(`external_identifier:${external_identifier['external_identifier']}`);
+		// logger.info(`users:${users}`)
+
 		const body = {
-				"touser": users?['externalid'] : '',
+				"touser": external_identifier['external_identifier'],
 				"template_id": "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
 				"page": "pages/tools/WorkNote/filelist",
 				"data": {
