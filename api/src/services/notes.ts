@@ -134,6 +134,8 @@ export class NotesService extends ItemsService {
 
 		const wxAccessToken = await wechatService.getAccessToken();
 
+		logger.info(`wxAccessToken:${wxAccessToken}`);
+
 		const users = this.accountability?.user;
 
 		const timestamp = new Date().toISOString();

@@ -228,7 +228,7 @@ router.post(
 );
 
 router.get(
-	'/wxNotifyUser',
+	'/wxNotifyUser/:pk',
 	asyncHandler(async (req, res, next) => {
 		const service = new NotesService({
 			accountability: req.accountability,
