@@ -6,7 +6,7 @@ import OSS from 'ali-oss';
 import { useEnv } from '../env.js';
 import { useLogger } from '../logger.js';
 import { randomUUID } from 'crypto';
-import { NotesService } from './notes.js';
+import { WechatService } from './wechatapp/index.js';
 import type { Knex } from 'knex';
 
 // import { useLogger } from '../logger.js';
@@ -235,14 +235,76 @@ export class NfilesService extends ItemsService {
 		// const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
 		// 	'grant_type=client_credential&appid='+env['AUTH_WECHAT_APPKEY']+'&secret='+env['AUTH_WECHAT_APPSECRET']);
 
-		const notesService = new NotesService({
+		const wechatService = new WechatService({
 			schema: this.schema,
 			knex: this.knex
 		})
 
+		const wxAccessToken = await wechatService.getAccessToken();
+
+		logger.info(`wxAccessToken:${wxAccessToken}`);
+
+		const users = this.accountability?.user;
+
+		const external_identifier = await this.knex
+			.select('external_identifier')
+			.from('directus_users')
+			.whereRaw('id = ?', [ users])
+			.first();
+
+		const timestamp = new Date().toISOString();
+
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+
+		const datestr = `${year}-${month}-${day}`;
+
+		logger.info(`external_identifier:${external_identifier['external_identifier']}`);
+		// logger.info(`users:${users}`)
+
+		const body = {
+				touser: external_identifier['external_identifier'],
+				template_id: "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
+				page: "pages/tools/WorkNote/filelist",
+				data: {
+					name2: {
+						value: "文件分析"
+					},
+					thing3: {
+						value: "文件会议纪要已经分析完毕，请查看"
+					},
+					date4: {
+						value: datestr
+					} ,
+					phrase6: {
+						value: "已完成"
+					}
+				},
+				miniprogram_state:"formal"
+		}
+
+		const url = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token='+wxAccessToken;
+
+		const headers = {
+			'Content-Type': 'application/json',
+		}
+
+		logger.info(`body:${JSON.stringify(body)}`)
+
 		try{
-			notesService.subscribeWeixin();
-			return 'success'
+			const res = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers,
+			});
+
+			logger.info(`res:${JSON.stringify(res)}`);
+
+			if(res.ok){
+				return 'success'
+			}
 		}catch(error: any){
 			logger.error(error);
 			return undefined;
