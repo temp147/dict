@@ -129,7 +129,7 @@ export class NfilesService extends ItemsService {
 						id: randomUUID()
 					}) ;
 
-				await this.notifyUser();
+				this.notifyUser();
 			}
 
 			return 'success'
@@ -217,7 +217,7 @@ export class NfilesService extends ItemsService {
 						id: randomUUID()
 					}) ;
 
-				await this.notifyUser();
+				this.notifyUser();
 			}
 
 			return 'success'
