@@ -140,6 +140,8 @@ export class NotesService extends ItemsService {
 
 		const users = this.accountability?.user;
 
+		logger.info(`users:${users}`);
+
 		const external_identifier = await this.knex
 			.select('external_identifier')
 			.from('directus_users')
@@ -155,12 +157,14 @@ export class NotesService extends ItemsService {
 
 		const datestr = `${year}-${month}-${day}`;
 
-		// logger.info(`external_identifier:${external_identifier['external_identifier']}`);
+
 		// logger.info(`users:${users}`)
 
 
 
 		try{
+			logger.info(`external_identifier:${external_identifier['external_identifier']}`);
+
 			const body = {
 				touser: external_identifier['external_identifier'],
 				template_id: "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
