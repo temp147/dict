@@ -155,10 +155,13 @@ export class NotesService extends ItemsService {
 
 		const datestr = `${year}-${month}-${day}`;
 
-		logger.info(`external_identifier:${external_identifier['external_identifier']}`);
+		// logger.info(`external_identifier:${external_identifier['external_identifier']}`);
 		// logger.info(`users:${users}`)
 
-		const body = {
+
+
+		try{
+			const body = {
 				touser: external_identifier['external_identifier'],
 				template_id: "Fll3Aw5_Ahxti8T9SmDET6dejqN_TzzJlg8igSymI7Y",
 				page: "pages/tools/WorkNote/filelist",
@@ -179,15 +182,14 @@ export class NotesService extends ItemsService {
 				miniprogram_state:"formal"
 		}
 
-		const url = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token='+wxAccessToken;
+			const url = 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token='+wxAccessToken;
 
-		const headers = {
-			'Content-Type': 'application/json',
-		}
+			const headers = {
+				'Content-Type': 'application/json',
+			}
 
-		logger.info(`body:${JSON.stringify(body)}`)
+			logger.info(`body:${JSON.stringify(body)}`)
 
-		try{
 			const res = await fetch(url, {
 				method: 'POST',
 				body: JSON.stringify(body),
