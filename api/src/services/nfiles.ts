@@ -113,8 +113,6 @@ export class NfilesService extends ItemsService {
 
 				const timestamp = new Date().toISOString();
 
-				this.notifyUser();
-
 
 				await this.knex('nb_notes').insert(
 					{
@@ -130,6 +128,8 @@ export class NfilesService extends ItemsService {
 						summary:summary,
 						id: randomUUID()
 					}) ;
+
+				await this.notifyUser();
 			}
 
 			return 'success'
@@ -199,7 +199,7 @@ export class NfilesService extends ItemsService {
 
 				const timestamp = new Date().toISOString();
 
-				this.notifyUser();
+
 
 
 				await this.knex('nb_notes').insert(
@@ -216,6 +216,8 @@ export class NfilesService extends ItemsService {
 						summary:summary,
 						id: randomUUID()
 					}) ;
+
+				await this.notifyUser();
 			}
 
 			return 'success'

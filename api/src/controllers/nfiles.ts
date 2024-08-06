@@ -310,4 +310,31 @@ router.get(
 	respond,
 )
 
+router.get(
+	'/notifyUser/:pk',
+	asyncHandler(async (req, res, next) => {
+		const service = new NfilesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			// const aliTaskID = req.params['pk']?req.params['pk']:'';
+			service.notifyUser();
+			res.locals['payload'] = { msg: "ok" };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
 export default router;
