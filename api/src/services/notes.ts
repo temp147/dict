@@ -105,7 +105,7 @@ export class NotesService extends ItemsService {
 
 				// logger.info(`description:${description}`);
 
-				this.subscribeWeixin();
+				this.subscribeWeixin(aliTaskID);
 
 
 
@@ -123,7 +123,7 @@ export class NotesService extends ItemsService {
 
 	}
 
-	async subscribeWeixin(): Promise<string | undefined>{
+	async subscribeWeixin(aliTaskID:string): Promise<string | undefined>{
 		const logger = useLogger();
 
 		// const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
@@ -138,14 +138,22 @@ export class NotesService extends ItemsService {
 
 		logger.info(`wxAccessToken:${wxAccessToken}`);
 
-		const users = this.accountability?.user;
+		// const users = this.accountability?.user;
+
+
+
+		const users = await this.knex
+			.select('users')
+			.from('nb_notes')
+			.whereRaw('"aliTaskID" = ?', [ aliTaskID])
+			.first();
 
 		logger.info(`users:${users}`);
 
 		const external_identifier = await this.knex
 			.select('external_identifier')
 			.from('directus_users')
-			.whereRaw('id = ?', [ users])
+			.whereRaw('id = ?', [ users['users']])
 			.first();
 
 		const timestamp = new Date().toISOString();

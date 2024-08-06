@@ -238,7 +238,8 @@ router.get(
 		const savedKeys: PrimaryKey[] = [];
 
 		try {
-			service.subscribeWeixin();
+			const aliTaskID = req.params['pk']?req.params['pk']:'';
+			service.subscribeWeixin(aliTaskID);
 			res.locals['payload'] = { msg: "ok" };
 		} catch (error: any) {
 			if (isDirectusError(error, ErrorCode.Forbidden)) {
