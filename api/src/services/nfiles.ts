@@ -79,7 +79,7 @@ export class NfilesService extends ItemsService {
 				headers,
 			});
 
-			logger.info(`res:${res}`);
+			logger.info(`res:${JSON.stringify(res)}`);
 
 			if(res.ok){
 				const fileAnalyzeObj = await res.json() as FileAnalyzeRes;
