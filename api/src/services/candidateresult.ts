@@ -52,7 +52,7 @@ export class CandidateresultService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async completeTest(testlist: any,userid: string,username: string,phone: string): Promise<any> {
+	async completeTest(testlist: any,userid: string,username: string,phone: string,companycode: string): Promise<any> {
 		const resultarray: Array<{ score: string; totalscore: number; type: string }> = [];
 		let resultscore = 0;
 		let testresult=''
@@ -109,6 +109,18 @@ export class CandidateresultService extends ItemsService {
 		const recommendList = abilityresult.recommend.replace(" ","").split(';');
 		// logger.info(JSON.parse(recommendList));
 		const operateDate = new Date();
+		const timestamp = operateDate.getTime();
+
+		const insertData_health = {
+			// "id":uuidv4(),
+			"phone": phone,
+			"users": userid,
+			"writedate":operateDate,
+			"finalscore": finalscore,
+			"healthtext": healthtext,
+			"companycode":companycode,
+			"timestamp":timestamp
+		}
 
 		const insertData = {
 			"id":uuidv4(),
@@ -123,6 +135,8 @@ export class CandidateresultService extends ItemsService {
 			"ability":abilityresult,
 			"operatedate":operateDate
 		}
+
+		const insertResult_health = await this.knex('nb_userhealth').insert(insertData_health);
 
 		const insertResult = await this.knex('nb_candidateresult').insert(insertData);
 

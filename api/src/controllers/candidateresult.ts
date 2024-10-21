@@ -217,9 +217,9 @@ router.post(
 			const userid = req.body['userid'] ? req.body['userid'] : '';
 			const username = req.body['username'] ? req.body['username'] : '';
 			const phone = req.body['phone'] ? req.body['phone'] : '';
-
+			const companycode = req.body['companycode'] ? req.body['companycode'] : '';
 			// const aliTaskID = req.params['pk']?req.params['pk']:'';
-			const list = service.completeTest(testlist,userid,username,phone);
+			const list = service.completeTest(testlist,userid,username,phone,companycode);
 			// logger.info(list);
 
 			res.locals['payload'] = { msg: 'ok' };
