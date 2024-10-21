@@ -55,12 +55,13 @@ export class CandidateresultService extends ItemsService {
 	async completeTest(testlist: any,userid: string,username: string,phone: string): Promise<any> {
 		const resultarray: Array<{ score: string; totalscore: number; type: string }> = [];
 		let resultscore = 0;
+		let testresult=''
 
 		for (const item of testlist) {
 			const testname = item;
 
 			const result = await this.knex
-				.select('score', 'totalscore', 'type')
+				.select('score', 'totalscore', 'type','level')
 				.from('nb_mentaltest')
 				.where('type', '=', testname)
 				.andWhere('users', '=', userid)
@@ -70,7 +71,9 @@ export class CandidateresultService extends ItemsService {
 			if (result.length > 0) {
 				resultarray.push(result[0]);
 				resultscore += Math.round((parseInt(result[0].score) * 100) / result[0].totalscore);
+				testresult += result[0].level + ','
 			}
+
 		}
 
 		logger.info(resultscore);
@@ -80,23 +83,25 @@ export class CandidateresultService extends ItemsService {
 		let healthtext = '';
 
 		if(finalscore >= 80){
-			finalscore = 100;
-			healthtext = '内心强大'
+			finalscore = 20;
+			healthtext = '有待观察'
 		}else if(finalscore >= 60){
-			finalscore = 80;
-			healthtext = '内心坚强'
+			finalscore = 40;
+			healthtext = '中等偏下'
 		}else if(finalscore >= 40){
 			finalscore = 60;
 			healthtext = '中等偏上'
 		}else if(finalscore >= 20){
-			finalscore = 40;
-			healthtext = '中等偏下'
+			finalscore = 80;
+			healthtext = '内心坚强'
 		}else{
-			finalscore = 20;
-			healthtext = '有待观察'
+			finalscore = 100;
+			healthtext = '内心强大'
 		}
 
-		const testresult = '较小的压力,轻微社恐,中度焦虑,优秀心理弹性,中等情绪调节能力'
+
+
+		// const testresult = '较小的压力,轻微社恐,中度焦虑,优秀心理弹性,中等情绪调节能力'
 
 		const abilityresult = await this.getability(testresult);
 		// logger.info(abilityresult);
