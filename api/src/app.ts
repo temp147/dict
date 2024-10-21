@@ -65,6 +65,8 @@ import notesRouter from './controllers/notes.js';
 import tagsRouter from './controllers/tags.js';
 import serversRouter from './controllers/servers.js';
 import nfilesRouter from './controllers/nfiles.js';
+import personinfosRouter from './controllers/personinfos.js';
+import candidateresultRouter from './controllers/candidateresult.js';
 
 import {
 	isInstalled,
@@ -351,6 +353,8 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/versions', versionsRouter);
 	app.use('/webhooks', webhooksRouter);
 	app.use('/items/nb_nfiles', nfilesRouter);
+	app.use('/items/nb_personinfos', personinfosRouter);
+	app.use('/items/nb_candidateresult', candidateresultRouter);
 	// app.use('/resources', resourcesRouter);
 
 
