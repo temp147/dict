@@ -100,8 +100,22 @@ export class PersoninfosService extends ItemsService {
 				});
 			});
 
-		// 将结果转换为数组返回
-		return Object.values(groupedMap);
+			// 对 groupedMap 的键进行排序
+			const sortedKeys = Object.keys(groupedMap).sort();
+
+			// 创建一个新的对象来存储排序后的结果
+			const sortedGroupedMap: { [key: string]: GroupedData } = {};
+
+			// 按照排序后的键顺序填充新的对象
+			sortedKeys.forEach(key => {
+				sortedGroupedMap[key] = groupedMap[key]!;
+			});
+
+			// 将结果转换为数组返回
+			return Object.values(sortedGroupedMap);
+
+		// // 将结果转换为数组返回
+		// return Object.values(groupedMap);
 	  }
 
 	async generateList(companyCode:string): Promise<GroupedData[]> {
