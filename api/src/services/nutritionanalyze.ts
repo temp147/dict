@@ -96,9 +96,10 @@ export class NutritionanalyzeService extends ItemsService {
 
 		const operateDate = new Date();
 		const timestamp = operateDate.getTime();
+		const dataid = uuidv4();
 
 		const insertData = {
-			"id":uuidv4(),
+			"id":dataid,
 			"name": foodname,
 			"phone": phone,
 			"users": userid,
@@ -110,7 +111,7 @@ export class NutritionanalyzeService extends ItemsService {
 
 		logger.info(insertResult);
 
-		return insertResult;
+		return dataid;
 	}
 
 	parseIngredients(ingredientsStr: string): Ingredient[] {
