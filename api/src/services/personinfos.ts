@@ -77,7 +77,7 @@ export class PersoninfosService extends ItemsService {
 
 			// 查找对应的健康数据
 			const healthInfo = healthData.find(h => h.users === person.users);
-			const healthtext = healthInfo ? healthInfo.healthtext : "M"; // 默认健康等级为M
+			const healthtext = healthInfo ? healthInfo.healthtext : "NA"; // 默认健康等级为M
 
 			// 如果分组中没有该字母组，创建一个
 			if (!groupedMap[letter]) {
@@ -91,13 +91,16 @@ export class PersoninfosService extends ItemsService {
 
 			logger.info(healthInfo)
 
-			// 添加到对应字母组的data数组中
-			groupedMap[letter].data.push({
-				name: person.name,
-				phone: person.phone,
-				healthtext,  // 使用健康数据中的 healthLevel
-				school: person.school
-				});
+			if(healthtext != "NA"){
+				// 添加到对应字母组的data数组中
+				groupedMap[letter].data.push({
+					name: person.name,
+					phone: person.phone,
+					healthtext,  // 使用健康数据中的 healthLevel
+					school: person.school
+					});
+				}
+
 			});
 
 			// 对 groupedMap 的键进行排序
