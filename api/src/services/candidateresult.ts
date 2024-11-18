@@ -52,7 +52,7 @@ export class CandidateresultService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async completeTest(testlist: any,userid: string,username: string,phone: string,companycode: string): Promise<any> {
+	async completeTest(testlist: any,userid: string,username: string,phone: string,companycode: string,type: string): Promise<any> {
 		const resultarray: Array<{ score: string; totalscore: number; type: string }> = [];
 		let resultscore = 0;
 		let testresult=''
@@ -103,7 +103,7 @@ export class CandidateresultService extends ItemsService {
 
 		// const testresult = '较小的压力,轻微社恐,中度焦虑,优秀心理弹性,中等情绪调节能力'
 
-		const abilityresult = await this.getability(testresult);
+		const abilityresult = await this.getability(testresult,type);
 		// logger.info(abilityresult);
 
 		const recommendList = abilityresult.recommend.replace(" ","").split(';');
@@ -133,7 +133,8 @@ export class CandidateresultService extends ItemsService {
 			"recommend":{"recommend":recommendList},
 			"detailscore":{"detailscore":resultarray},
 			"ability":abilityresult,
-			"operatedate":operateDate
+			"operatedate":operateDate,
+			"type":type
 		}
 
 		const insertResult_health = await this.knex('nb_userhealth').insert(insertData_health);
@@ -146,8 +147,15 @@ export class CandidateresultService extends ItemsService {
 		return 'ok';
 	}
 
-	async getability(testresult: string): Promise<any> {
-		const url = 'https://flowise.metacause.cn/api/v1/prediction/81b84137-9b47-441c-8042-0c6a334b7d88'
+	async getability(testresult: string,type:string): Promise<any> {
+		let url = ''
+
+		if(type === 'student'){
+			url = 'https://flowise.metacause.cn/api/v1/prediction/c736adf0-ab1c-432e-abed-7960a6786fe8'
+		}else{
+			url = 'https://flowise.metacause.cn/api/v1/prediction/81b84137-9b47-441c-8042-0c6a334b7d88'
+		}
+
 
 		const body={
 			"question": testresult,

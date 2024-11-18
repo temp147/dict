@@ -218,8 +218,9 @@ router.post(
 			const username = req.body['username'] ? req.body['username'] : '';
 			const phone = req.body['phone'] ? req.body['phone'] : '';
 			const companycode = req.body['companycode'] ? req.body['companycode'] : '';
+			const type = req.body['type'] ? req.body['type'] : '';
 			// const aliTaskID = req.params['pk']?req.params['pk']:'';
-			const list = service.completeTest(testlist,userid,username,phone,companycode);
+			const list = service.completeTest(testlist,userid,username,phone,companycode,type);
 			// logger.info(list);
 
 			res.locals['payload'] = { msg: 'ok' };
@@ -235,5 +236,8 @@ router.post(
 	}),
 	respond,
 );
+
+
+
 
 export default router;
