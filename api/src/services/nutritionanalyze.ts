@@ -95,7 +95,7 @@ export class NutritionanalyzeService extends ItemsService {
 
 		logger.info(foodReport);
 
-		let operateDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+		let operateDate =new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
 		// logger.info(result);
 
 		if(operatedate !== ''){
