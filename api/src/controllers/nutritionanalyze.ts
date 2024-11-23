@@ -218,9 +218,10 @@ router.post(
 			const username = req.body['username'] ? req.body['username'] : '';
 			const phone = req.body['phone'] ? req.body['phone'] : '';
 			const foodname = req.body['foodname'] ? req.body['foodname'] : '';
+			const operatedate = req.body['operatedate'] ? req.body['operatedate'] : '';
 			// const companycode = req.body['companycode'] ? req.body['companycode'] : '';
 			// const aliTaskID = req.params['pk']?req.params['pk']:'';
-			const foodReport = await service.completeReport(userid,username,phone,foodname);
+			const foodReport = await service.completeReport(userid,username,phone,foodname,operatedate);
 			// logger.info(list);
 
 			res.locals['payload'] = { msg: foodReport };

@@ -75,7 +75,7 @@ export class NutritionanalyzeService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async completeReport(userid: string,username: string,phone: string,foodname: string): Promise<any> {
+	async completeReport(userid: string,username: string,phone: string,foodname: string,operatedate: string): Promise<any> {
 		const result = await this.getJson(foodname);
 
 		const foodReport: FoodReport = {
@@ -95,10 +95,14 @@ export class NutritionanalyzeService extends ItemsService {
 
 		logger.info(foodReport);
 
-
+		let operateDate = new Date();
 		// logger.info(result);
 
-		const operateDate = new Date();
+		if(operatedate !== ''){
+			operateDate = new Date(operatedate);
+		}
+
+		// const operateDate = new Date();
 		const timestamp = operateDate.getTime();
 		const dataid = uuidv4();
 
