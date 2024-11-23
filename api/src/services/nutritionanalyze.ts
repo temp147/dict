@@ -29,6 +29,8 @@ interface Ingredient {
 	steps: Step[];
 	suitable_population: string[];
 	nutrtion: string;
+	type: string;
+	img: string;
   }
 // interface Person {
 // 	name: string;
@@ -86,7 +88,9 @@ export class NutritionanalyzeService extends ItemsService {
 			carbohydrate: result.carbohydrate,
 			steps: this.parseSteps(result.steps),
 			suitable_population: this.parseSuitablePopulation(result.suitable_population),
-			nutrtion: result.nutrtion
+			nutrtion: result.nutrtion,
+			type: result.type,
+			img: result.img
 		  };
 
 		logger.info(foodReport);
