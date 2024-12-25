@@ -233,4 +233,72 @@ router.post(
 	respond,
 );
 
+router.post(
+	'/getmonthsummary/',
+	asyncHandler(async (req, res, next) => {
+		const service = new PersoninfosService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			const userid = req.body['userid'] ? req.body['userid'] : '';
+
+			// const aliTaskID = req.params['pk']?req.params['pk']:'';
+			// const list = await service.generateList(companyCode);
+			// logger.info(list);
+			const list = {
+				monthSummary: '     您在追求健康和个人成长的道路上已经取得了一些积极的成果，但仍有一些领域需要进一步的关注和改进。建议您继续关注健康饮食，同时增加运动量，以促进身体健康。在情绪管理方面，您可以继续参与心理健康活动，以维持情绪平衡。对于睡眠质量的改善，您可以尝试睡前放松技巧，并保持规律的作息时间。通过这些具体的行动，您可以进一步养成健康的生活习惯，提升生活质量。',
+				image:'https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/summaryImg.jpg?sign=ee3a18fea25ccdb1889d686931eac5a0&t=1734573844'
+			}
+
+			res.locals['payload'] = { data: list };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
+router.post(
+	'/getWxSignature/',
+	asyncHandler(async (req, res, next) => {
+		const service = new PersoninfosService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			const url = req.body['url'] ? req.body['url'] : '';
+			const timestamp = req.body['timestamp'] ? req.body['timestamp'] : '';
+
+			// const aliTaskID = req.params['pk']?req.params['pk']:'';
+			// const list = await service.generateList(companyCode);
+			// logger.info(list);
+			const signature = await service.getWxSignature(url, timestamp);
+
+			res.locals['payload'] = { data: signature };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
 export default router;

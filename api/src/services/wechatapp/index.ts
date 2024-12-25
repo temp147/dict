@@ -7,7 +7,7 @@ import { useEnv } from '../../env.js';
 import { useLogger } from '../../logger.js';
 // import getMailer from '../../mailer.js';
 import type { AbstractServiceOptions } from '../../types/index.js';
-import { randomUUID } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 // import  CryptoJS from 'crypto-js'
 // import { Url } from '../../utils/url.js';
 
@@ -39,6 +39,13 @@ interface WxPhone{
 
 }
 
+// interface ticket {
+// 	error_code: number,
+// 	error_msg: string,
+// 	ticket: string,
+// 	expires_in: number
+// }
+
 interface WxPhoneRes {
 	errcode: number,
 	errmsg: string,
@@ -50,6 +57,7 @@ interface WxPhoneRes {
 interface WxTokenRes {
 	access_token: string;
 	expires_in: number;
+	ticket: string;
   }
 
 export class WechatService{
@@ -69,6 +77,50 @@ export class WechatService{
 			}
 		}
 	}
+
+	async getSignature(url: string, timestamp: any ): Promise<string> {
+		const accessToken = await this.getAccessTokenForShare();
+		const ticket = await this.getTicket(accessToken);
+
+		const noncestr = 'Wm3WZYTPz0wzccnW';
+		// const timestamp = Math.floor(Date.now() / 1000);
+		const signature = `jsapi_ticket=${ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`;
+		const signatureSha1 = createHash('sha1').update(signature).digest('hex');
+
+		return signatureSha1;
+	}
+
+	async getTicket(accessToken: string): Promise<string> {
+		const url = new  URL('https://api.weixin.qq.com/cgi-bin/ticket/getticket?' +
+		'access_token='+accessToken+'&type=jsapi');
+
+		const ticket = await this.getHttpOption(url)
+
+		return ticket?.ticket || '';
+	}
+
+	async getAccessTokenForShare():Promise<string>{
+		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
+		'grant_type=client_credential&appid='+env['WECHAT_OPEN_APPID']+'&secret='+env['WECHAT_OPEN_APPSECRET']);
+
+		let eventuallySccessToken = '';
+		// let accessToken='';
+		//nb_accesstokens为表
+		// const sqlAccessToken = await this.knex('nb_accesstokens').select('id','create_time','expires_in','access_token').first();
+		// logger.info(sqlAccessToken);
+		const accessToken = await this.getHttpOption(url)
+
+		eventuallySccessToken = accessToken?.access_token || '';
+
+		// if (accessToken) {
+		// 	await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
+
+		// } else {
+		// 		throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
+		// 	 }
+
+		return  eventuallySccessToken
+	};
 
 	async getAccessToken():Promise<string>{
 		const url = new  URL('https://api.weixin.qq.com/cgi-bin/token?' +
@@ -91,46 +143,6 @@ export class WechatService{
 			 }
 
 		return  eventuallySccessToken
-
-		// if(sqlAccessToken != undefined) {
-		// 	const expiresIn = sqlAccessToken.expires_in
-		// 	const oldTime = new Date(sqlAccessToken.create_time).getTime();
-		// 	const newTime = (new Date()).getTime();
-		// 	const isTimeValidate = ((newTime - oldTime)/1000-expiresIn)/60;
-
-		// 	//已经失效了或有效时间小于1M‘。
-		// 	if(isTimeValidate <1 ){
-		// 		//重新获取
-		// 		const accessToken = await this.getHttpOption(url);
-		// 		eventuallySccessToken = accessToken.access_token
-
-		// 		if(accessToken){
-		// 			//存储token
-		// 			await this.knex('nb_accesstokens').update({access_token: accessToken.access_token,expires_in: accessToken.expires_in,create_time:newTime}).where('id', sqlAccessToken.id)
-
-		// 		}else{
-		// 			throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
-		// 		}
-
-		// 		return eventuallySccessToken
-		// 	}else{
-		// 		eventuallySccessToken = sqlAccessToken.access_token
-		// 		return eventuallySccessToken
-		// 	}
-		// }else{
-		// 	//没有token
-		// 	const accessToken = await this.getHttpOption(url)
-		// 	eventuallySccessToken = accessToken.access_token
-
-		// 	if (accessToken) {
-		// 		await this.knex('nb_accesstokens').insert({access_token: accessToken.access_token,expires_in: accessToken.expires_in,id: randomUUID()}) ;
-
-		// 	} else {
-		// 		throw new InvalidPayloadError({ reason: `AccessToken doesn't exist` });
-		// 	 }
-
-		// 	 return  eventuallySccessToken
-		// }
 	};
 
 			//获取用户的UUID

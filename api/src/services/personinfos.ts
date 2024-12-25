@@ -3,6 +3,7 @@ import getDatabase from '../database/index.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 import pinyin from 'pinyin'
+import { WechatService } from './wechatapp/index.js';
 import { useLogger } from '../logger.js';
 
 const logger = useLogger();
@@ -131,5 +132,16 @@ export class PersoninfosService extends ItemsService {
 		// logger.info(healthLevels);
 		return this.groupByFirstLetter(persons,healthLevels);
 		// return persons;
+	}
+
+	async getWxSignature(url: string, timestamp: any): Promise<string> {
+		const wechatService = new WechatService({
+			schema: this.schema,
+			knex: this.knex
+		});
+
+		const signature = await wechatService.getSignature(url,timestamp);
+
+		return signature;
 	}
 }
