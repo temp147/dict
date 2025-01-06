@@ -5,6 +5,7 @@ import { ItemsService } from './items.js';
 import pinyin from 'pinyin'
 import { WechatService } from './wechatapp/index.js';
 import { useLogger } from '../logger.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const logger = useLogger();
 
@@ -17,6 +18,18 @@ interface Person {
 	school: string;
 	role: string;
   }
+
+interface InfoData{
+	age: string;
+	gender: string;
+	height: string;
+	weight: string;
+	constellation: string;
+	birthdate: string;
+	color: string;
+	hobby: string;
+	personality: string;
+}
 
 // interface Candidate {
 //     name: string;
@@ -143,5 +156,82 @@ export class PersoninfosService extends ItemsService {
 		const signature = await wechatService.getSignature(url,timestamp);
 
 		return signature;
+	}
+
+	async completeInfo(chathistory: object,users: string): Promise<any> {
+			const result = await this.getJson(chathistory);
+
+			const infoData: InfoData = {
+				gender: result.gender === 'male' ? '男' : '女',
+				height: result.height ? parseInt(result.height, 10).toString() : '175',
+				weight: result.weight ? parseInt(result.weight, 10).toString() : '65',
+				constellation: result.constellation ? result.constellation : '',
+				age: result.age,
+				birthdate: result.birthdate,
+				color: result.color,
+				hobby: result.hobby,
+				personality: result.personality,
+			};
+
+			logger.info(infoData);
+
+			const dataid = uuidv4();
+
+			const updateData = {
+				"gender": infoData.gender,
+				"height": infoData.height,
+				"weight": infoData.weight,
+				"constellation": infoData.constellation,
+				"age": infoData.age,
+				"birthdate": infoData.birthdate,
+				"color": infoData.color,
+				"hobby": infoData.hobby,
+				"personality": infoData.personality,
+			}
+
+			const updateResult = await this.knex('nb_personinfos').update(updateData).where('users', users);
+
+			logger.info(updateResult);
+
+			return dataid;
+		}
+
+	async getJson(chathistory: object): Promise<any> {
+		const url = 'https://flowise.metacause.cn/api/v1/prediction/42bb1895-7be7-4f29-9802-0b4a8457b129'
+
+		const body={
+			"question": chathistory,
+			"history":[]
+		}
+
+		const headers = {
+			'Content-Type': 'application/json',
+		}
+
+		try{
+			const res = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(body),
+				headers,
+			});
+
+			const resClone = res.clone();
+			const resText = await resClone.text();
+			// logger.info(resText);
+
+			if(res.ok){
+				const result = await res.json() as any;
+				// logger.info(result.json);
+				// const parsedResult = JSON.parse(result.json);
+				return result.json;
+				// return result;
+			}else{
+				return 'error';
+			}
+		}catch(error: any){
+			logger.error(error);
+			return undefined;
+
+		}
 	}
 }
