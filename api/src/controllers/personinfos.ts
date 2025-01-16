@@ -306,6 +306,37 @@ router.post(
 );
 
 router.post(
+	'/updateInfoFromFlowiseJson/',
+	asyncHandler(async (req, res, next) => {
+		const service = new PersoninfosService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			const userid = req.body['userid'] ? req.body['userid'] : '';
+			const profile = req.body['profile'] ? req.body['profile'] : '';
+			const date = req.body['date'] ? req.body['date'] : '';
+			const dataid = await service.updateProfile(profile,userid,date);
+
+
+			res.locals['payload'] = { data: dataid };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
+router.post(
 	'/getWxSignature/',
 	asyncHandler(async (req, res, next) => {
 		const service = new PersoninfosService({

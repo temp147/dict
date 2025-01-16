@@ -29,6 +29,18 @@ interface InfoData{
 	color: string;
 	hobby: string;
 	personality: string;
+	hobbies: string;
+	habits: string;
+}
+
+interface UpdateProfileData{
+	name: string;
+	height: string;
+	weight: string;
+	selfintroduction: string;
+	birthdate: string;
+	hobbies: string;
+	habits: string;
 }
 
 // interface Candidate {
@@ -159,7 +171,8 @@ export class PersoninfosService extends ItemsService {
 	}
 
 	async completeInfo(chathistory: object,users: string): Promise<any> {
-			const result = await this.getJson(chathistory);
+			const flowiseKey = '42bb1895-7be7-4f29-9802-0b4a8457b129'
+			const result = await this.getJson(chathistory,flowiseKey);
 
 			const infoData: InfoData = {
 				gender: result.gender === 'male' ? '男' : '女',
@@ -171,9 +184,19 @@ export class PersoninfosService extends ItemsService {
 				color: result.color,
 				hobby: result.hobby,
 				personality: result.personality,
+				hobbies: result.hobbies,
+				habits: result.habits
 			};
 
 			logger.info(infoData);
+
+			const hobbiesObj = infoData.hobbies.split(';')
+
+			const habitsObj = infoData.habits.split(';').map(habit => {
+				const title = habit.split('-')[0];
+				const detail = habit.split('-')[1];
+				return { "title":title, "detail":detail };
+			});
 
 			const dataid = uuidv4();
 
@@ -187,6 +210,8 @@ export class PersoninfosService extends ItemsService {
 				"color": infoData.color,
 				"hobby": infoData.hobby,
 				"personality": infoData.personality,
+				"hobbies": JSON.stringify(hobbiesObj),
+				"habits": JSON.stringify(habitsObj)
 			}
 
 			const updateResult = await this.knex('nb_personinfos').update(updateData).where('users', users);
@@ -196,8 +221,55 @@ export class PersoninfosService extends ItemsService {
 			return dataid;
 		}
 
-	async getJson(chathistory: object): Promise<any> {
-		const url = 'https://flowise.metacause.cn/api/v1/prediction/42bb1895-7be7-4f29-9802-0b4a8457b129'
+		async updateProfile(profile: string,users: string, date: string): Promise<any> {
+			const flowiseKey = 'cb442a8d-b3c9-47e5-9304-83f87e89dade'
+			const result = await this.getJson({"profile":profile},flowiseKey);
+
+			const profileData: UpdateProfileData = {
+				name: result.name? result.name : '探险家',
+				height: result.height ? parseInt(result.height, 10).toString() : '175',
+				weight: result.weight ? parseInt(result.weight, 10).toString() : '65',
+				hobbies: result.hobbies ? result.hobbies : '',
+				birthdate: result.birthdate,
+				habits: result.habits ? result.habits : '',
+				selfintroduction: result.selfintroduction ? result.selfintroduction : '',
+			};
+
+			const hobbiesObj = profileData.hobbies.split(';')
+
+			const habitsObj = profileData.habits.split(';').map(habit => {
+				const title = habit.split('-')[0];
+				const detail = habit.split('-')[1];
+				return { "title":title, "detail":detail };
+			});
+
+			logger.info(habitsObj);
+
+
+			const dataid = uuidv4();
+
+			const updateData = {
+				"name": profileData.name,
+				"height": profileData.height,
+				"weight": profileData.weight,
+				"selfintroduction": profileData.selfintroduction,
+				"birthdate": profileData.birthdate,
+				"hobbies": JSON.stringify(hobbiesObj),
+				"habits": JSON.stringify(habitsObj),
+				"writedate": date
+			}
+
+			logger.info(updateData);
+
+			const updateResult = await this.knex('nb_personinfos').update(updateData).where('users', users);
+
+
+
+			return dataid;
+		}
+
+	async getJson(chathistory: object,flowiseKey: string): Promise<any> {
+		const url = 'https://flowise.metacause.cn/api/v1/prediction/'+flowiseKey;
 
 		const body={
 			"question": chathistory,
