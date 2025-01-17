@@ -31,6 +31,7 @@ interface InfoData{
 	personality: string;
 	hobbies: string;
 	habits: string;
+	selfintroduction: string;
 }
 
 interface UpdateProfileData{
@@ -192,7 +193,8 @@ export class PersoninfosService extends ItemsService {
 				hobby: result.hobby,
 				personality: result.personality,
 				hobbies: result.hobbies,
-				habits: result.habits
+				habits: result.habits,
+				selfintroduction: result.selfintroduction
 			};
 
 			logger.info(infoData);
@@ -225,7 +227,7 @@ export class PersoninfosService extends ItemsService {
 
 			logger.info(updateResult);
 
-			return dataid;
+			return infoData.selfintroduction;
 		}
 
 		async updateProfile(profile: string,users: string, date: string): Promise<any> {

@@ -281,7 +281,7 @@ router.post(
 		try {
 			const userid = req.body['userid'] ? req.body['userid'] : '';
 			const chathistory = req.body['chathistory'] ? req.body['chathistory'] : '';
-			const dataid = await service.completeInfo(chathistory,userid);
+			const selfintroduction = await service.completeInfo(chathistory,userid);
 
 			// const aliTaskID = req.params['pk']?req.params['pk']:'';
 			// const list = await service.generateList(companyCode);
@@ -291,7 +291,7 @@ router.post(
 			// 	image:'https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/summaryImg.jpg?sign=ee3a18fea25ccdb1889d686931eac5a0&t=1734573844'
 			// }
 
-			res.locals['payload'] = { data: dataid };
+			res.locals['payload'] = { data: selfintroduction };
 		} catch (error: any) {
 			if (isDirectusError(error, ErrorCode.Forbidden)) {
 				return next();
