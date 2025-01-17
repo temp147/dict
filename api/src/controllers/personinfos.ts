@@ -337,6 +337,37 @@ router.post(
 );
 
 router.post(
+	'/updateUserActivityPoolJson/',
+	asyncHandler(async (req, res, next) => {
+		const service = new PersoninfosService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const savedKeys: PrimaryKey[] = [];
+
+		try {
+			const userid = req.body['userid'] ? req.body['userid'] : '';
+			const profile = req.body['content'] ? req.body['content'] : '';
+			const date = req.body['date'] ? req.body['date'] : '';
+			const dataid = await service.updateUserActivity(profile,userid,date);
+
+
+			res.locals['payload'] = { data: dataid };
+		} catch (error: any) {
+			if (isDirectusError(error, ErrorCode.Forbidden)) {
+				return next();
+			}
+
+			throw error;
+		}
+
+		return next();
+	}),
+	respond,
+);
+
+router.post(
 	'/getWxSignature/',
 	asyncHandler(async (req, res, next) => {
 		const service = new PersoninfosService({
