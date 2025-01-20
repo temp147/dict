@@ -32,6 +32,7 @@ interface InfoData{
 	hobbies: string;
 	habits: string;
 	selfintroduction: string;
+	healthdemands: string;
 }
 
 interface UpdateProfileData{
@@ -208,7 +209,8 @@ export class PersoninfosService extends ItemsService {
 				personality: result.personality,
 				hobbies: result.hobbies,
 				habits: result.habits,
-				selfintroduction: result.selfintroduction
+				selfintroduction: result.selfintroduction,
+				healthdemands: result.healthdemands
 			};
 
 			logger.info(infoData);
@@ -235,7 +237,8 @@ export class PersoninfosService extends ItemsService {
 				"personality": infoData.personality,
 				"hobbies": JSON.stringify(hobbiesObj),
 				"habits": JSON.stringify(habitsObj),
-				"selfintroduction": infoData.selfintroduction
+				"selfintroduction": infoData.selfintroduction,
+				"healthdemands": infoData.healthdemands
 			}
 
 			const updateResult = await this.knex('nb_personinfos').update(updateData).where('users', users);
