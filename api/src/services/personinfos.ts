@@ -46,9 +46,23 @@ interface UpdateProfileData{
 
 interface UpdateActivityData{
 	physical_activity: string;
+	physical_activity_title: string;
 	mental_activity: string;
+	mental_activity_title: string;
 	nutrition_activity: string;
-	habit_activity: string;
+	nutrition_activity_title: string;
+	physical_activity_bonus: BigInteger;
+	mental_activity_bonus: BigInteger;
+	nutrition_activity_bonus: BigInteger;
+	physical_activity2: string;
+	physical_activity_title2: string;
+	mental_activity2: string;
+	mental_activity_title2: string;
+	nutrition_activity2: string;
+	nutrition_activity_title2: string;
+	physical_activity_bonus2: BigInteger;
+	mental_activity_bonus2: BigInteger;
+	nutrition_activity_bonus2: BigInteger;
 }
 
 // interface Candidate {
@@ -286,7 +300,21 @@ export class PersoninfosService extends ItemsService {
 				physical_activity: result.physical_activity? result.physical_activity : '',
 				mental_activity: result.mental_activity ? result.mental_activity: '',
 				nutrition_activity: result.nutrition_activity ? result.nutrition_activity : '',
-				habit_activity: result.habit_activity ? result.habit_activity : '',
+				physical_activity_title: result.physical_activity_title ? result.physical_activity_title : '',
+				mental_activity_title: result.mental_activity_title ? result.mental_activity_title : '',
+				nutrition_activity_title: result.nutrition_activity_title ? result.nutrition_activity_title : '',
+				physical_activity_bonus: result.physical_activity_bonus ? result.physical_activity_bonus : 0,
+				mental_activity_bonus: result.mental_activity_bonus ? result.mental_activity_bonus : 0,
+				nutrition_activity_bonus: result.nutrition_activity_bonus ? result.nutrition_activity_bonus : 0,
+				physical_activity2: result.physical_activity2? result.physical_activity2 : '',
+				mental_activity2: result.mental_activity2 ? result.mental_activity2: '',
+				nutrition_activity2: result.nutrition_activity2 ? result.nutrition_activity2 : '',
+				physical_activity_title2: result.physical_activity_title2 ? result.physical_activity_title2 : '',
+				mental_activity_title2: result.mental_activity_title2 ? result.mental_activity_title2 : '',
+				nutrition_activity_title2: result.nutrition_activity_title2 ? result.nutrition_activity_title2 : '',
+				physical_activity_bonus2: result.physical_activity_bonus2 ? result.physical_activity_bonus2 : 0,
+				mental_activity_bonus2: result.mental_activity_bonus2 ? result.mental_activity_bonus2 : 0,
+				nutrition_activity_bonus2: result.nutrition_activity_bonus2 ? result.nutrition_activity_bonus2 : 0,
 			};
 
 			// const hobbiesObj = profileData.hobbies.split(';')
@@ -300,7 +328,7 @@ export class PersoninfosService extends ItemsService {
 			// logger.info(habitsObj);
 			const physicalUpdateData = {
 				"id":uuidv4(),
-				"title":"挑战"+ActivityData.physical_activity,
+				"title":"挑战"+ActivityData.physical_activity_title,
 				"type":"health",
 				"character":"KUIJIEJIE",
 				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
@@ -309,13 +337,29 @@ export class PersoninfosService extends ItemsService {
 				"isOnce":true,
 				"isEveryDay":true,
 				"users":users,
-				"writedate": date
+				"writedate": date,
+				"bonus": ActivityData.physical_activity_bonus
+			}
+
+			const physicalUpdateData2 = {
+				"id":uuidv4(),
+				"title":"挑战"+ActivityData.physical_activity_title2,
+				"type":"health",
+				"character":"KUIJIEJIE",
+				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
+				"desc":"健康伴我同行",
+				"contenttext":JSON.stringify([ActivityData.physical_activity2]),
+				"isOnce":true,
+				"isEveryDay":true,
+				"users":users,
+				"writedate": date,
+				"bonus": ActivityData.physical_activity_bonus2
 			}
 
 			const mentalUpdateData = {
 				"id":uuidv4(),
-				"title":"尝试"+ActivityData.mental_activity,
-				"type":"health",
+				"title":"尝试"+ActivityData.mental_activity_title,
+				"type":"mental",
 				"character":"KUIJIEJIE",
 				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
 				"desc":"健康伴我同行",
@@ -323,38 +367,70 @@ export class PersoninfosService extends ItemsService {
 				"isOnce":true,
 				"isEveryDay":true,
 				"users":users,
-				"writedate": date
+				"writedate": date,
+				"bonus": ActivityData.mental_activity_bonus
+			}
+
+			const mentalUpdateData2 = {
+				"id":uuidv4(),
+				"title":"尝试"+ActivityData.mental_activity_title2,
+				"type":"mental",
+				"character":"KUIJIEJIE",
+				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
+				"desc":"健康伴我同行",
+				"contenttext":JSON.stringify([ActivityData.mental_activity2]),
+				"isOnce":true,
+				"isEveryDay":true,
+				"users":users,
+				"writedate": date,
+				"bonus": ActivityData.mental_activity_bonus2
 			}
 
 			const nutritionUpdateData = {
 				"id":uuidv4(),
-				"title":"试试看"+ActivityData.nutrition_activity,
+				"title":"试试看"+ActivityData.nutrition_activity_title,
 				"type":"dish",
-				"character":"小当家",
+				"character":"XIAODANGJIA",
 				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/xiaodangjia/xiaodangjia-avatar-removebg-preview.png?sign=cd8b5c9fe93371f6a6c6f47c91380203&t=1733737145",
 				"desc":"好身材伴随我",
 				"contenttext":JSON.stringify([ActivityData.nutrition_activity]),
 				"isOnce":true,
 				"isEveryDay":true,
 				"users":users,
-				"writedate": date
+				"writedate": date,
+				"bonus": ActivityData.nutrition_activity_bonus
 			}
 
-			const habitUpdateData = {
+			const nutritionUpdateData2 = {
 				"id":uuidv4(),
-				"title":"养成"+ActivityData.habit_activity,
-				"type":"health",
-				"character":"KUIJIEJIE",
-				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
-				"desc":"健康伴我同行",
-				"contenttext":JSON.stringify([ActivityData.habit_activity]),
+				"title":"试试看"+ActivityData.nutrition_activity_title2,
+				"type":"dish",
+				"character":"XIAODANGJIA",
+				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/xiaodangjia/xiaodangjia-avatar-removebg-preview.png?sign=cd8b5c9fe93371f6a6c6f47c91380203&t=1733737145",
+				"desc":"好身材伴随我",
+				"contenttext":JSON.stringify([ActivityData.nutrition_activity2]),
 				"isOnce":true,
 				"isEveryDay":true,
 				"users":users,
-				"writedate": date
+				"writedate": date,
+				"bonus": ActivityData.nutrition_activity_bonus2
 			}
 
-			const insertData = [physicalUpdateData,mentalUpdateData,nutritionUpdateData,habitUpdateData];
+			// const habitUpdateData = {
+			// 	"id":uuidv4(),
+			// 	"title":"养成"+ActivityData.habit_activity,
+			// 	"type":"health",
+			// 	"character":"KUIJIEJIE",
+			// 	"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
+			// 	"desc":"健康伴我同行",
+			// 	"contenttext":JSON.stringify([ActivityData.habit_activity]),
+			// 	"isOnce":true,
+			// 	"isEveryDay":true,
+			// 	"users":users,
+			// 	"writedate": date
+			// }
+
+			const insertData = [physicalUpdateData,mentalUpdateData,nutritionUpdateData,physicalUpdateData2,mentalUpdateData2,nutritionUpdateData2];
 
 
 			const dataid = uuidv4();
