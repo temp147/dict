@@ -33,6 +33,7 @@ interface InfoData{
 	habits: string;
 	selfintroduction: string;
 	healthdemands: string;
+	recommendhabits: string;
 }
 
 interface UpdateProfileData{
@@ -210,7 +211,8 @@ export class PersoninfosService extends ItemsService {
 				hobbies: result.hobbies,
 				habits: result.habits,
 				selfintroduction: result.selfintroduction,
-				healthdemands: result.healthdemands
+				healthdemands: result.healthdemands,
+				recommendhabits: result.recommendhabits
 			};
 
 			logger.info(infoData);
@@ -222,6 +224,14 @@ export class PersoninfosService extends ItemsService {
 				const detail = habit.split('-')[1];
 				return { "title":title, "detail":detail };
 			});
+
+			const recommendhabitsObj = infoData.recommendhabits.split(';').map(habit => {
+				const title = habit.split('-')[0];
+				const detail = habit.split('-')[1];
+				return { "title":title, "detail":detail };
+			})
+
+			const habitsData = [...habitsObj, ...recommendhabitsObj];
 
 			const dataid = uuidv4();
 
@@ -236,7 +246,7 @@ export class PersoninfosService extends ItemsService {
 				"hobby": infoData.hobby,
 				"personality": infoData.personality,
 				"hobbies": JSON.stringify(hobbiesObj),
-				"habits": JSON.stringify(habitsObj),
+				"habits": JSON.stringify(habitsData),
 				"selfintroduction": infoData.selfintroduction,
 				"healthdemands": infoData.healthdemands
 			}
