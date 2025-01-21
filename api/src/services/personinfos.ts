@@ -198,6 +198,8 @@ export class PersoninfosService extends ItemsService {
 			const flowiseKey = '42bb1895-7be7-4f29-9802-0b4a8457b129'
 			const result = await this.getJson(chathistory,flowiseKey);
 
+			// logger.info(result);
+
 			const infoData: InfoData = {
 				gender: result.gender === 'male' ? '男' : '女',
 				height: result.height ? parseInt(result.height, 10).toString() : '175',
@@ -217,19 +219,19 @@ export class PersoninfosService extends ItemsService {
 
 			logger.info(infoData);
 
-			const hobbiesObj = infoData.hobbies.split(';')
+			const hobbiesObj = (infoData.hobbies ?? '').split(';')
 
-			const habitsObj = infoData.habits.split(';').map(habit => {
+			const habitsObj = (infoData.habits ?? '').split(';').map(habit => {
 				const title = habit.split('-')[0];
 				const detail = habit.split('-')[1];
-				return { "title":title, "detail":detail };
+				return { "title": title, "detail": detail };
 			});
 
-			const recommendhabitsObj = infoData.recommendhabits.split(';').map(habit => {
+			const recommendhabitsObj = (infoData.recommendhabits ?? '').split(';').map(habit => {
 				const title = habit.split('-')[0];
 				const detail = habit.split('-')[1];
-				return { "title":title, "detail":detail };
-			})
+				return { "title": title, "detail": detail };
+			});
 
 			const habitsData = [...habitsObj, ...recommendhabitsObj];
 
@@ -491,6 +493,7 @@ export class PersoninfosService extends ItemsService {
 				return result.json;
 				// return result;
 			}else{
+				logger.error(resText);
 				return 'error';
 			}
 		}catch(error: any){
