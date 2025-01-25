@@ -57,15 +57,15 @@ interface UpdateActivityData{
 	physical_activity_bonus: BigInteger;
 	mental_activity_bonus: BigInteger;
 	nutrition_activity_bonus: BigInteger;
-	physical_activity2: string;
-	physical_activity_title2: string;
-	mental_activity2: string;
-	mental_activity_title2: string;
-	nutrition_activity2: string;
-	nutrition_activity_title2: string;
-	physical_activity_bonus2: BigInteger;
-	mental_activity_bonus2: BigInteger;
-	nutrition_activity_bonus2: BigInteger;
+	// physical_activity2: string;
+	// physical_activity_title2: string;
+	// mental_activity2: string;
+	// mental_activity_title2: string;
+	// nutrition_activity2: string;
+	// nutrition_activity_title2: string;
+	// physical_activity_bonus2: BigInteger;
+	// mental_activity_bonus2: BigInteger;
+	// nutrition_activity_bonus2: BigInteger;
 }
 
 // interface Candidate {
@@ -195,9 +195,18 @@ export class PersoninfosService extends ItemsService {
 		return signature;
 	}
 
-	async completeInfo(chathistory: object,users: string): Promise<any> {
+	async completeInfo(chathistory: any[], users: string): Promise<any> {
 			const flowiseKey = '42bb1895-7be7-4f29-9802-0b4a8457b129'
-			const result = await this.getJson(chathistory,flowiseKey);
+
+			let chatHistoryString = '';
+
+			// chathistory.forEach((chat: any) => {
+
+			chathistory.forEach((chat: any) => {
+				chatHistoryString = chatHistoryString + chat.content + ';';
+			});
+
+			const result = await this.getJson(chatHistoryString,flowiseKey);
 
 			// logger.info(result);
 
@@ -211,12 +220,12 @@ export class PersoninfosService extends ItemsService {
 				color: result.color,
 				hobby: result.hobby,
 				personality: result.personality,
-				hobbies: result.hobbies,
-				habits: result.habits,
-				selfintroduction: result.selfintroduction,
+				hobbies: result.hobbies ? result.hobbies : '看书;美食',
+				habits: result.habits ? result.habits : '睡眠情况-每日睡眠时间不少于7小时;每日饮食-每日三餐正常摄入',
+				selfintroduction: result.selfintroduction? result.selfintroduction : '你是一个神秘且注重健康的人，',
 				healthdemands: result.healthdemands,
 				recommendhabits: result.recommendhabits,
-				updatedfield: result.updatedfield
+				updatedfield: result.updatedfield? result.updatedfield : '已更新性别，身高，体重，生日等信息'
 			};
 
 			logger.info(infoData);
@@ -259,12 +268,17 @@ export class PersoninfosService extends ItemsService {
 
 			logger.info(updateResult);
 
-			return infoData.updatedfield;
+			const returnData = {
+				"selfintroduction": infoData.selfintroduction,
+				"updatedfield": infoData.updatedfield
+			}
+
+			return returnData;
 		}
 
 		async updateProfile(profile: string,users: string, date: string): Promise<any> {
 			const flowiseKey = 'cb442a8d-b3c9-47e5-9304-83f87e89dade'
-			const result = await this.getJson({"profile":profile},flowiseKey);
+			const result = await this.getJson(profile,flowiseKey);
 
 			const profileData: UpdateProfileData = {
 				name: result.name? result.name : '探险家',
@@ -311,7 +325,7 @@ export class PersoninfosService extends ItemsService {
 
 		async updateUserActivity(content: string,users: string, date: string): Promise<any> {
 			const flowiseKey = '0b3e412c-f9ef-409c-bcb6-2383623d9bbf'
-			const result = await this.getJson({"content":content},flowiseKey);
+			const result = await this.getJson(content,flowiseKey);
 
 			const ActivityData: UpdateActivityData = {
 				physical_activity: result.physical_activity? result.physical_activity : '',
@@ -323,15 +337,15 @@ export class PersoninfosService extends ItemsService {
 				physical_activity_bonus: result.physical_activity_bonus ? result.physical_activity_bonus : 0,
 				mental_activity_bonus: result.mental_activity_bonus ? result.mental_activity_bonus : 0,
 				nutrition_activity_bonus: result.nutrition_activity_bonus ? result.nutrition_activity_bonus : 0,
-				physical_activity2: result.physical_activity2? result.physical_activity2 : '',
-				mental_activity2: result.mental_activity2 ? result.mental_activity2: '',
-				nutrition_activity2: result.nutrition_activity2 ? result.nutrition_activity2 : '',
-				physical_activity_title2: result.physical_activity_title2 ? result.physical_activity_title2 : '',
-				mental_activity_title2: result.mental_activity_title2 ? result.mental_activity_title2 : '',
-				nutrition_activity_title2: result.nutrition_activity_title2 ? result.nutrition_activity_title2 : '',
-				physical_activity_bonus2: result.physical_activity_bonus2 ? result.physical_activity_bonus2 : 0,
-				mental_activity_bonus2: result.mental_activity_bonus2 ? result.mental_activity_bonus2 : 0,
-				nutrition_activity_bonus2: result.nutrition_activity_bonus2 ? result.nutrition_activity_bonus2 : 0,
+				// physical_activity2: result.physical_activity2? result.physical_activity2 : '',
+				// mental_activity2: result.mental_activity2 ? result.mental_activity2: '',
+				// nutrition_activity2: result.nutrition_activity2 ? result.nutrition_activity2 : '',
+				// physical_activity_title2: result.physical_activity_title2 ? result.physical_activity_title2 : '',
+				// mental_activity_title2: result.mental_activity_title2 ? result.mental_activity_title2 : '',
+				// nutrition_activity_title2: result.nutrition_activity_title2 ? result.nutrition_activity_title2 : '',
+				// physical_activity_bonus2: result.physical_activity_bonus2 ? result.physical_activity_bonus2 : 0,
+				// mental_activity_bonus2: result.mental_activity_bonus2 ? result.mental_activity_bonus2 : 0,
+				// nutrition_activity_bonus2: result.nutrition_activity_bonus2 ? result.nutrition_activity_bonus2 : 0,
 			};
 
 			// const hobbiesObj = profileData.hobbies.split(';')
@@ -358,20 +372,20 @@ export class PersoninfosService extends ItemsService {
 				"bonus": ActivityData.physical_activity_bonus
 			}
 
-			const physicalUpdateData2 = {
-				"id":uuidv4(),
-				"title":"挑战"+ActivityData.physical_activity_title2,
-				"type":"health",
-				"character":"KUIJIEJIE",
-				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
-				"desc":"健康伴我同行",
-				"contenttext":JSON.stringify([ActivityData.physical_activity2]),
-				"isOnce":true,
-				"isEveryDay":true,
-				"users":users,
-				"writedate": date,
-				"bonus": ActivityData.physical_activity_bonus2
-			}
+			// const physicalUpdateData2 = {
+			// 	"id":uuidv4(),
+			// 	"title":"挑战"+ActivityData.physical_activity_title2,
+			// 	"type":"health",
+			// 	"character":"KUIJIEJIE",
+			// 	"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
+			// 	"desc":"健康伴我同行",
+			// 	"contenttext":JSON.stringify([ActivityData.physical_activity2]),
+			// 	"isOnce":true,
+			// 	"isEveryDay":true,
+			// 	"users":users,
+			// 	"writedate": date,
+			// 	"bonus": ActivityData.physical_activity_bonus2
+			// }
 
 			const mentalUpdateData = {
 				"id":uuidv4(),
@@ -388,20 +402,20 @@ export class PersoninfosService extends ItemsService {
 				"bonus": ActivityData.mental_activity_bonus
 			}
 
-			const mentalUpdateData2 = {
-				"id":uuidv4(),
-				"title":"尝试"+ActivityData.mental_activity_title2,
-				"type":"mental",
-				"character":"KUIJIEJIE",
-				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
-				"desc":"健康伴我同行",
-				"contenttext":JSON.stringify([ActivityData.mental_activity2]),
-				"isOnce":true,
-				"isEveryDay":true,
-				"users":users,
-				"writedate": date,
-				"bonus": ActivityData.mental_activity_bonus2
-			}
+			// const mentalUpdateData2 = {
+			// 	"id":uuidv4(),
+			// 	"title":"尝试"+ActivityData.mental_activity_title2,
+			// 	"type":"mental",
+			// 	"character":"KUIJIEJIE",
+			// 	"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/kuijie/kuijiejie-avatar-removebg-preview.png?sign=e4cdd17e82fb1ae433e283862c965ea6&t=1733733997",
+			// 	"desc":"健康伴我同行",
+			// 	"contenttext":JSON.stringify([ActivityData.mental_activity2]),
+			// 	"isOnce":true,
+			// 	"isEveryDay":true,
+			// 	"users":users,
+			// 	"writedate": date,
+			// 	"bonus": ActivityData.mental_activity_bonus2
+			// }
 
 			const nutritionUpdateData = {
 				"id":uuidv4(),
@@ -418,20 +432,20 @@ export class PersoninfosService extends ItemsService {
 				"bonus": ActivityData.nutrition_activity_bonus
 			}
 
-			const nutritionUpdateData2 = {
-				"id":uuidv4(),
-				"title":"试试看"+ActivityData.nutrition_activity_title2,
-				"type":"dish",
-				"character":"XIAODANGJIA",
-				"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/xiaodangjia/xiaodangjia-avatar-removebg-preview.png?sign=cd8b5c9fe93371f6a6c6f47c91380203&t=1733737145",
-				"desc":"好身材伴随我",
-				"contenttext":JSON.stringify([ActivityData.nutrition_activity2]),
-				"isOnce":true,
-				"isEveryDay":true,
-				"users":users,
-				"writedate": date,
-				"bonus": ActivityData.nutrition_activity_bonus2
-			}
+			// const nutritionUpdateData2 = {
+			// 	"id":uuidv4(),
+			// 	"title":"试试看"+ActivityData.nutrition_activity_title2,
+			// 	"type":"dish",
+			// 	"character":"XIAODANGJIA",
+			// 	"characterimg":"https://636c-cloud1-2gi1qn5dfd4d7f48-1322907055.tcb.qcloud.la/content/character/xiaodangjia/xiaodangjia-avatar-removebg-preview.png?sign=cd8b5c9fe93371f6a6c6f47c91380203&t=1733737145",
+			// 	"desc":"好身材伴随我",
+			// 	"contenttext":JSON.stringify([ActivityData.nutrition_activity2]),
+			// 	"isOnce":true,
+			// 	"isEveryDay":true,
+			// 	"users":users,
+			// 	"writedate": date,
+			// 	"bonus": ActivityData.nutrition_activity_bonus2
+			// }
 
 			// const habitUpdateData = {
 			// 	"id":uuidv4(),
@@ -447,7 +461,7 @@ export class PersoninfosService extends ItemsService {
 			// 	"writedate": date
 			// }
 
-			const insertData = [physicalUpdateData,mentalUpdateData,nutritionUpdateData,physicalUpdateData2,mentalUpdateData2,nutritionUpdateData2];
+			const insertData = [physicalUpdateData,mentalUpdateData,nutritionUpdateData];
 
 
 			const dataid = uuidv4();
@@ -465,7 +479,7 @@ export class PersoninfosService extends ItemsService {
 			return dataid;
 		}
 
-	async getJson(chathistory: object,flowiseKey: string): Promise<any> {
+	async getJson(chathistory: string,flowiseKey: string): Promise<any> {
 		const url = 'https://flowise.metacause.cn/api/v1/prediction/'+flowiseKey;
 
 		const body={
