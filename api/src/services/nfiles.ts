@@ -7,7 +7,7 @@ import { useEnv } from '../env.js';
 import { useLogger } from '../logger.js';
 import { randomUUID } from 'crypto';
 import { WechatService } from './wechatapp/index.js';
-import type { Knex } from 'knex';
+// import type { Knex } from 'knex';
 
 // import { useLogger } from '../logger.js';
 
