@@ -1,0 +1,23 @@
+table: nb_nutritionanalyze
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+  phone:
+    type: string
+  operatedate:
+    type: timestamp
+  body:
+    type: json
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+
+
