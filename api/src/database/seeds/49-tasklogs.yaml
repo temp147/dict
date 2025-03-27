@@ -16,7 +16,7 @@ columns:
   process:  #进度
     type: integer
   tasks:
-    type: uuid
+    type: integer
     nullable: false
     references:
       table: nb_tasks
