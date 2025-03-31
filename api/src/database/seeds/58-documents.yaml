@@ -1,0 +1,32 @@
+table: nb_documents
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+  doctype:
+    type: string
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  ragid:
+    type: string
+  doc_file:
+    type: uuid
+    references:
+      table: directus_files
+      column: id
+  doc_text:
+    type: text
+  last_updated:
+    type: timestamp
+
+
+
+
