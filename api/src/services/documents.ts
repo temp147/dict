@@ -1,7 +1,7 @@
 import getDatabase from '../database/index.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
-import { useLogger } from '../logger.js';
+// import { useLogger } from '../logger.js';
 
 
 export class DocumentsService extends ItemsService {
@@ -26,18 +26,24 @@ export class DocumentsService extends ItemsService {
 	}
 
 	async createRAG(companyCode:string): Promise<string> {
-		// const persons = await this.readMany([], { fields: ['name', 'phone', 'userid', 'companycode', 'school', 'role'] });
-		const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
-		const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
-		// logger.info(persons);
+		//TODO create the RAG according to the the tags
+		//select the rag id from the nb_rag
+		//create the doc for each rag according to the doc type.
+		//then store the docId
 
-		// logger.info(list);
-		// logger.info(healthLevels);
+		// const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
+		// const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
+
 		return 'this.groupByFirstLetter(persons,healthLevels)';
 		// return persons;
 	}
 
 	async updateFlowiseRAG(ragCode: string): Promise<string>{
+
+		//TODO create the RAG according to the the tags
+		//select the rag id from the nb_rag
+		//create the doc for each rag according to the doc type.
+		//then store the docId
 		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?');
 
 		try {
@@ -56,5 +62,9 @@ export class DocumentsService extends ItemsService {
 
 		}
 
+	}
+
+	async getRAGId(tags: JSON): Promise<[string]>{
+		return ['1']
 	}
 }

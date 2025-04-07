@@ -8,15 +8,17 @@ columns:
   name :
     type: string
   doctype:
-    type: string
+    type: string # One of : 'doc','txt','pdf','csv','html','page'
+    length: 8
   users:
     type: uuid
     nullable: false
     references:
       table: directus_users
       column: id
-  ragid:
+  doc_id:
     type: string
+    length: 64
   doc_file:
     type: uuid
     references:
@@ -24,6 +26,8 @@ columns:
       column: id
   doc_text:
     type: text
+  doc_tag:
+    type: json
   last_updated:
     type: timestamp
 

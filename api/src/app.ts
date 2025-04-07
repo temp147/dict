@@ -68,6 +68,8 @@ import nfilesRouter from './controllers/nfiles.js';
 import personinfosRouter from './controllers/personinfos.js';
 import candidateresultRouter from './controllers/candidateresult.js';
 import nutritionanalyzeRouter from './controllers/nutritionanalyze.js';
+import documentsRouter from './controllers/documents.js';
+import ragsRouter from './controllers/rags.js';
 
 import {
 	isInstalled,
@@ -357,6 +359,9 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_personinfos', personinfosRouter);
 	app.use('/items/nb_candidateresult', candidateresultRouter);
 	app.use('/items/nb_nutritionanalyze', nutritionanalyzeRouter);
+	app.use('/items/nb_documents', documentsRouter);
+	app.use('/items/nb_rags', ragsRouter);
+
 	// app.use('/resources', resourcesRouter);
 
 
