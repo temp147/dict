@@ -1,8 +1,11 @@
 import getDatabase from '../database/index.js';
-import type { AbstractServiceOptions } from '../types/index.js';
+import type { AbstractServiceOptions, Item, MutationOptions, PrimaryKey } from '../types/index.js';
 import { ItemsService } from './items.js';
-// import { useLogger } from '../logger.js';
+import { useLogger } from '../logger.js';
 
+import { useEnv } from '../env.js';
+
+const env = useEnv();
 
 export class DocumentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
@@ -13,10 +16,77 @@ export class DocumentsService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async updateRAG(companyCode:string): Promise<string> {
+	override async createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey> {
+		const result = await this.createMany([data], opts);
+		return result[0]!;
+	}
+
+	override async createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+		const emails = data['map']((payload) => payload['email']).filter((email) => email);
+		// const passwords = data['map']((payload) => payload['password']).filter((password) => password);
+
+		// try {
+		// 	if (emails.length) {
+		// 		this.validateEmail(emails);
+		// 		await this.checkUniqueEmails(emails);
+		// 	}
+
+		// 	if (passwords.length) {
+		// 		await this.checkPasswordPolicy(passwords);
+		// 	}
+		// } catch (err: any) {
+		// 	(opts || (opts = {})).preMutationError = err;
+		// }
+
+		return await super.createMany(data, opts);
+	}
+
+
+
+	async updateRAG(data:Partial<Item>[]): Promise<string> {
+
+		const file = data['map']((payload) => payload['email']).filter((email) => email);
+
+		// use FormData to upload files
+		const  formData = new FormData();
+		formData.append("files",'file');
+		formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
+		formData.append("splitter", JSON.stringify({"config":{"chunkSize":20000}}));
+		// Add additional metadata to the document chunks
+		formData.append("metadata", "{}");
+		// Replace existing document with the new upserted chunks
+		formData.append("replaceExisting", "true");
+		// Override existing configuration
+		// formData.append("loader", "");
+		// formData.append("embedding", "");
+		// formData.append("vectorStore", "");
+		// formData.append("recordManager", "");
+
+		async function query(formData:FormData) {
+		const response = await fetch(
+		"http://localhost:3000/api/v1/document-store/upsert/4cccaa89-0fff-42c7-b791-6de84934ae96",
+		{
+			method: "POST",
+			headers: {
+				"Authorization": "Bearer <your_api_key_here>"
+			},
+			body: formData
+		}
+		);
+
+		const result = await response.json();
+		return result;
+		}
+
+		query(formData).then((response) => {
+			// useLogger.toString(response);
+		});
+
+
+
 		// const persons = await this.readMany([], { fields: ['name', 'phone', 'userid', 'companycode', 'school', 'role'] });
-		const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
-		const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
+		// const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
+		// const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
 		// logger.info(persons);
 
 		// logger.info(list);
