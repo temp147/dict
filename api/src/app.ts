@@ -330,6 +330,12 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_notes', notesRouter);
 	app.use('/items/nb_tags', tagsRouter);
 	app.use('/items/nb_nfiles', nfilesRouter);
+	app.use('/items/nb_documents', documentsRouter);
+	app.use('/items/nb_rags', ragsRouter);
+	app.use('/items/nb_nfiles', nfilesRouter);
+	app.use('/items/nb_personinfos', personinfosRouter);
+	app.use('/items/nb_candidateresult', candidateresultRouter);
+	app.use('/items/nb_nutritionanalyze', nutritionanalyzeRouter);
 
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
@@ -355,12 +361,9 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/utils', utilsRouter);
 	app.use('/versions', versionsRouter);
 	app.use('/webhooks', webhooksRouter);
-	app.use('/items/nb_nfiles', nfilesRouter);
-	app.use('/items/nb_personinfos', personinfosRouter);
-	app.use('/items/nb_candidateresult', candidateresultRouter);
-	app.use('/items/nb_nutritionanalyze', nutritionanalyzeRouter);
-	app.use('/items/nb_documents', documentsRouter);
-	app.use('/items/nb_rags', ragsRouter);
+
+
+
 
 	// app.use('/resources', resourcesRouter);
 

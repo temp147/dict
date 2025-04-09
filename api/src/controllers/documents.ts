@@ -169,6 +169,8 @@ router.delete(
 			await service.deleteByQuery(sanitizedQuery);
 		}
 
+		// service.deleteRAGDoc(req.body.keys);
+
 		return next();
 	}),
 	respond,
@@ -180,9 +182,11 @@ router.delete(
 		const service = new DocumentsService({
 			accountability: req.accountability,
 			schema: req.schema,
-		});
+		})
 
 		await service.deleteOne(req.params['pk']!);
+
+		// service.deleteRAGDoc(req.body.keys);
 
 		return next();
 	}),

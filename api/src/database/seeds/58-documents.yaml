@@ -24,6 +24,7 @@ columns:
     references:
       table: directus_files
       column: id
+    nullable: true
   doc_text:
     type: text
   doc_tag:

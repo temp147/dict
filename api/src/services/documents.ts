@@ -7,6 +7,10 @@ import { useEnv } from '../env.js';
 
 const env = useEnv();
 
+const logger = useLogger();
+
+const APIKEY ='l18D9VFiUcfESJCoLSRcUjn/l/s4ZevPhA/fFzAjplA='
+
 export class DocumentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
 		super('nb_documents', options);
@@ -22,7 +26,7 @@ export class DocumentsService extends ItemsService {
 	}
 
 	override async createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
-		const emails = data['map']((payload) => payload['email']).filter((email) => email);
+		// const emails = data['map']((payload) => payload['email']).filter((email) => email);
 		// const passwords = data['map']((payload) => payload['password']).filter((password) => password);
 
 		// try {
@@ -41,9 +45,19 @@ export class DocumentsService extends ItemsService {
 		return await super.createMany(data, opts);
 	}
 
+	override async deleteOne(key: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey> {
+		const RAGDocId = await this.knex.select('docId').from('nb_documents').where('id', key);
+
+		this.deleteRAGDoc(key, RAGDocId);
 
 
-	async updateRAG(data:Partial<Item>[]): Promise<string> {
+
+		return await super.deleteOne(key,opts)
+	}
+
+
+
+	async updateRAGDoc(data:Partial<Item>[]): Promise<string> {
 
 		const file = data['map']((payload) => payload['email']).filter((email) => email);
 
@@ -61,6 +75,7 @@ export class DocumentsService extends ItemsService {
 		// formData.append("embedding", "");
 		// formData.append("vectorStore", "");
 		// formData.append("recordManager", "");
+		// formData.append("docStore", "");
 
 		async function query(formData:FormData) {
 		const response = await fetch(
@@ -95,7 +110,7 @@ export class DocumentsService extends ItemsService {
 		// return persons;
 	}
 
-	async createRAG(companyCode:string): Promise<string> {
+	async createRAGDoc(companyCode:string): Promise<string> {
 		//TODO create the RAG according to the the tags
 		//select the rag id from the nb_rag
 		//create the doc for each rag according to the doc type.
@@ -108,7 +123,8 @@ export class DocumentsService extends ItemsService {
 		// return persons;
 	}
 
-	async updateFlowiseRAG(ragCode: string): Promise<string>{
+	// tobe delete
+	async updateRAG(ragCode: string): Promise<string>{
 
 		//TODO create the RAG according to the the tags
 		//select the rag id from the nb_rag
@@ -133,6 +149,36 @@ export class DocumentsService extends ItemsService {
 		}
 
 	}
+
+
+	async deleteRAGDoc(key:PrimaryKey,docId:any): Promise<PrimaryKey> {
+
+		const url = new  URL("http://localhost:3000/api/v1/document-store/loader/4cccaa89-0fff-42c7-b791-6de84934ae96/"+docId,);
+
+		try {
+			const res = await fetch(url, {
+				method: 'DELETE',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + APIKEY
+				},
+			})
+
+			logger.error(res.ok)
+
+			if(!res.ok){
+				throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
+				// return res.json()
+				return key
+			}
+		} catch (error: any) {
+			// logger.error(error);
+			return 'undefined'
+
+		}
+	}
+
 
 	async getRAGId(tags: JSON): Promise<[string]>{
 		return ['1']
