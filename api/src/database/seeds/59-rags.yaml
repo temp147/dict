@@ -12,6 +12,12 @@ columns:
   doc_tag: # One of : 'all','teenage','career'
     type: string
     length: 8
+  servers:
+    type: uuid
+    references:
+      table: nb_servers
+      column: id
+    nullable: false
 
 
 

@@ -50,8 +50,6 @@ export class DocumentsService extends ItemsService {
 
 		this.deleteRAGDoc(key, RAGDocId);
 
-
-
 		return await super.deleteOne(key,opts)
 	}
 

@@ -41,25 +41,47 @@ export class ServersService extends ItemsService {
 
 	// async gerateS(key: PrimaryKey, data: Record<string, any>,
 	private async gerateUrl(key: PrimaryKey,
-		): Promise<{url: URL ; apikey: string, apisecret:string}|undefined > {
+		): Promise<{url: URL, apikey: string, apisecret:string}|undefined > {
 
 		const aiServer = await this.getServerByKey(key);
 
 		if( aiServer?.type === 'flowise'){
 			const url = new URL('/api/v1/prediction/', aiServer.url);
-			const apikey = '0'
+			const apisecret = '0'
 
-			if(aiServer.apisecret){
-				const apisecret = 'Bearer '+aiServer.apisecret
+			if(aiServer.apikey){
+				const apikey = 'Bearer '+aiServer.apikey
 				return {url, apikey, apisecret};
 			}
 
-			const apisecret = '0';
+			const apikey = '0';
 			return {url, apikey, apisecret};
 		}
 		else{
 			return ;
 		}
+	}
+
+	async gerateRAGUrl(key:PrimaryKey,RAGid:string ):Promise<{url:URL,  apikey: string, apisecret:string}|undefined>{
+
+		const aiServer = await this.getServerByKey(key);
+
+		if(aiServer?.type ==='flowise'){
+			const url = new URL('api/v1/document-store/loader/process/'+RAGid, aiServer.url);
+			const apisecret = '0';
+
+			if(aiServer.apikey){
+				const apikey = 'Bearer '+aiServer.apikey
+				return {url, apikey, apisecret};
+			}
+
+			const apikey = '0';
+			return {url, apikey, apisecret};
+		}
+		else{
+			return ;
+		}
+
 	}
 
 	async sendChats(key:PrimaryKey,flowId:string, message: Partial<Item>[]): Promise<FlowiseRes|undefined>{
@@ -73,7 +95,7 @@ export class ServersService extends ItemsService {
 				'Content-Type': 'application/json',
 			};
 
-			headers['Authorization'] = servers.apisecret;
+			headers['Authorization'] = servers.apikey;
 
 			let res;
 
