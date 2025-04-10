@@ -111,7 +111,7 @@ export class RagsService extends ItemsService {
 	}
 
 
-	async deleteRAGDoc(key:PrimaryKey,docId:any): Promise<PrimaryKey> {
+	async deleteRAGDoc(doc_tag:string,docId:string): Promise<string> {
 
 		const  serversService = new ServersService({
 			schema: this.schema,
@@ -119,13 +119,14 @@ export class RagsService extends ItemsService {
 		})
 
 		//get rag basc info
-		const ragInfo = await this.knex.select('servers','ragId').from('nb_rags').where('id', key).first();
+		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
 
 		//get the rag server address and appkey
 		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
-		const url = serversInfo?.url+ragInfo.ragId+docId
+		const url = serversInfo?.url+ragInfo.rag_id+'/'+docId
 		// const url = new  URL("http://localhost:3000/api/v1/document-store/loader/4cccaa89-0fff-42c7-b791-6de84934ae96/"+docId,);
+					//           http://localhost:3000/api/v1/document-store/loader/process/4cccaa89-0fff-42c7-b791-6de84934ae96/9c4bb384-fc10-4663-af27-65d6bf8931c4
 
 		try {
 			const res = await fetch(url, {
@@ -136,13 +137,13 @@ export class RagsService extends ItemsService {
 				},
 			})
 
-			logger.error(res.ok)
+			// logger.error(res.ok)
 
 			if(!res.ok){
 				throw new Error(`[${res.status}] ${await res.text()}`)
 			}else{
 				// return res.json()
-				return key
+				return doc_tag
 			}
 		} catch (error: any) {
 			// logger.error(error);
@@ -150,7 +151,6 @@ export class RagsService extends ItemsService {
 
 		}
 	}
-
 
 	async getRAGId(tags: JSON): Promise<[string]>{
 		return ['1']

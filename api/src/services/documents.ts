@@ -8,9 +8,6 @@ import { RagsService } from './rags.js'
 // const env = useEnv();
 
 // const logger = useLogger();
-
-// const APIKEY ='l18D9VFiUcfESJCoLSRcUjn/l/s4ZevPhA/fFzAjplA='
-
 export class DocumentsService extends ItemsService {
 	constructor(options: AbstractServiceOptions) {
 		super('nb_documents', options);
@@ -31,14 +28,18 @@ export class DocumentsService extends ItemsService {
 
 	override async deleteOne(key: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey> {
 
-		const RAGDocId = await this.knex.select('docId').from('nb_documents').where('id', key);
+		const RAGDoc  = await this.knex.select('doc_id').from('nb_documents').where('id', key).first();
 
 		const ragsService = new RagsService({
 			accountability: this.accountability,
 			schema: this.schema
 		})
 
-		ragsService.deleteRAGDoc(key, RAGDocId);
+		// const ragKey = await this.knex.select(rag_id).from('nb_documents').join('nb_rags', 'nb_rags.tag')
+
+		const ragTag ='all';
+
+		ragsService.deleteRAGDoc(ragTag, RAGDoc.doc_id);
 
 		return await super.deleteOne(key,opts)
 	}

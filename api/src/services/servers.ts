@@ -67,7 +67,7 @@ export class ServersService extends ItemsService {
 		const aiServer = await this.getServerByKey(key);
 
 		if(aiServer?.type ==='flowise'){
-			const url = new URL('api/v1/document-store/loader/process/', aiServer.url);
+			const url = new URL('api/v1/document-store/loader/', aiServer.url);
 			const apisecret = '0';
 
 			if(aiServer.apikey){
