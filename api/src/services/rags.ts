@@ -17,17 +17,35 @@ export class RagsService extends ItemsService {
 		this.schema = options.schema;
 	}
 
-	async updateRAGDoc(data:Partial<Item>[]): Promise<string> {
+	async updateRAGDoc(doc_tag:string,docId:string): Promise<string> {
 
-		const file = data['map']((payload) => payload['email']).filter((email) => email);
+		const  serversService = new ServersService({
+			schema: this.schema,
+			accountability: this.accountability,
+		})
 
-		// use FormData to upload files
+		//get rag basc info
+		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+
+		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+
+		const url = serversInfo?.url+'upsert/'+ragInfo.rag_id+'/'
+
 		const  formData = new FormData();
-		formData.append("files",'file');
-		formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
-		formData.append("splitter", JSON.stringify({"config":{"chunkSize":20000}}));
+
+		// formData.append("files",'file');
+		formData.append("docId", docId);
+		formData.append("loaderId", "plainText");
+		formData.append("storeId", ragInfo.rag_id);
+		formData.append("loaderName","Plain Text" );
+		formData.append("loaderConfig",JSON.stringify({"text":"this is new text","textSplitter":"","metadata":"","omitMetadataKeys":""}))
+
+		formData.append("splitterId","characterTextSplitter")
+		formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
+		formData.append("splitterName","Character Text Splitter")
+
 		// Add additional metadata to the document chunks
-		formData.append("metadata", "{}");
+		// formData.append("metadata", "{}");
 		// Replace existing document with the new upserted chunks
 		formData.append("replaceExisting", "true");
 		// Override existing configuration
@@ -37,79 +55,164 @@ export class RagsService extends ItemsService {
 		// formData.append("recordManager", "");
 		// formData.append("docStore", "");
 
-		async function query(formData:FormData) {
-		const response = await fetch(
-		"http://localhost:3000/api/v1/document-store/upsert/4cccaa89-0fff-42c7-b791-6de84934ae96",
-		{
-			method: "POST",
-			headers: {
-				"Authorization": "Bearer <your_api_key_here>"
-			},
-			body: formData
-		}
-		);
-
-		const result = await response.json();
-		return result;
-		}
-
-		query(formData).then((response) => {
-			// useLogger.toString(response);
-		});
-
-
-
-		// const persons = await this.readMany([], { fields: ['name', 'phone', 'userid', 'companycode', 'school', 'role'] });
-		// const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
-		// const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
-		// logger.info(persons);
-
-		// logger.info(list);
-		// logger.info(healthLevels);
-		return 'this.groupByFirstLetter(persons,healthLevels)';
-		// return persons;
-	}
-
-	async createRAGDoc(companyCode:string): Promise<string> {
-		//TODO create the RAG according to the the tags
-		//select the rag id from the nb_rag
-		//create the doc for each rag according to the doc type.
-		//then store the docId
-
-		// const persons = await this.knex.select('name', 'phone', 'users', 'companycode', 'school', 'role').from('nb_personinfos').where('companycode', companyCode);
-		// const healthLevels = await this.knex.select('users', 'healthtext','finalscore').from('nb_userhealth').where('companycode', companyCode).orderBy('writedate','desc');
-
-		return 'this.groupByFirstLetter(persons,healthLevels)';
-		// return persons;
-	}
-
-	// tobe delete
-	async updateRAG(ragCode: string): Promise<string>{
-
-		//TODO create the RAG according to the the tags
-		//select the rag id from the nb_rag
-		//create the doc for each rag according to the doc type.
-		//then store the docId
-		const url = new  URL('https://api.weixin.qq.com/sns/jscode2session?');
 
 		try {
 			const res = await fetch(url, {
-				method: 'GET'
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + serversInfo?.apikey
+				},
+				body: formData
 			})
 
 			if(!res.ok){
 				throw new Error(`[${res.status}] ${await res.text()}`)
 			}else{
-				return res.json()
+				// return res.json()
+				return doc_tag
 			}
 		} catch (error: any) {
 			// logger.error(error);
 			return 'undefined'
 
 		}
-
 	}
 
+	async createRAGDoc(doc_tag:string): Promise<string> {
+		//TODO create the RAG according to the the tags
+		//select the rag id from the nb_rag
+		//create the doc for each rag according to the doc type.
+		//then store the docId
+
+		const  serversService = new ServersService({
+			schema: this.schema,
+			accountability: this.accountability,
+		})
+
+		//get rag basc info
+		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+
+		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+
+		const url = serversInfo?.url+'loader/save'+ragInfo.rag_id+'/'
+
+		const  formData = new FormData();
+
+		// formData.append("files",'file');
+		// formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
+		formData.append("loaderId", "plainText");
+		formData.append("storeId", ragInfo.rag_id);
+		formData.append("loaderName","Plain Text" );
+		formData.append("loaderConfig",JSON.stringify({"text":"context","textSplitter":"","metadata":"","omitMetadataKeys":""}))
+
+		formData.append("splitterId","characterTextSplitter")
+		formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
+		formData.append("splitterName","Character Text Splitter")
+
+		// Add additional metadata to the document chunks
+		// formData.append("metadata", "{}");
+		// Replace existing document with the new upserted chunks
+		// formData.append("replaceExisting", "true");
+		// Override existing configuration
+		// formData.append("loader", "");
+		// formData.append("embedding", "");
+		// formData.append("vectorStore", "");
+		// formData.append("recordManager", "");
+		// formData.append("docStore", "");
+
+
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + serversInfo?.apikey
+				},
+				body: formData
+			})
+
+			// logger.error(res.ok)
+
+			if(!res.ok){
+				throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
+				// return res.json()
+				return doc_tag
+			}
+		} catch (error: any) {
+			// logger.error(error);
+			return 'undefined'
+
+		}
+	}
+
+	async processRAGDoc(doc_tag:string,docId:string): Promise<string> {
+		//TODO create the RAG according to the the tags
+		//select the rag id from the nb_rag
+		//create the doc for each rag according to the doc type.
+		//then store the docId
+
+		const  serversService = new ServersService({
+			schema: this.schema,
+			accountability: this.accountability,
+		})
+
+		//get rag basc info
+		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+
+		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+
+		const url = serversInfo?.url+'loader/process'+docId
+
+		const  formData = new FormData();
+
+		// formData.append("files",'file');
+		// formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
+		formData.append("loaderId", "plainText");
+		formData.append("storeId", ragInfo.rag_id);
+		formData.append("loaderName","Plain Text" );
+		formData.append("loaderConfig",JSON.stringify({"text":"context","textSplitter":"","metadata":"","omitMetadataKeys":""}))
+		//splitter option
+		formData.append("splitterId","characterTextSplitter")
+		formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
+		formData.append("splitterName","Character Text Splitter")
+
+		// Add additional metadata to the document chunks
+		// formData.append("metadata", "{}");
+		// Replace existing document with the new upserted chunks
+		// formData.append("replaceExisting", "true");
+		// Override existing configuration
+		// formData.append("loader", "");
+		// formData.append("embedding", "");
+		// formData.append("vectorStore", "");
+		// formData.append("recordManager", "");
+		// formData.append("docStore", "");
+
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + serversInfo?.apikey
+				},
+				body: formData
+			})
+
+			// logger.error(res.ok)
+
+			if(!res.ok){
+				throw new Error(`[${res.status}] ${await res.text()}`)
+			}else{
+				// return res.json()
+				return doc_tag
+			}
+		} catch (error: any) {
+			// logger.error(error);
+			return 'undefined'
+
+		}
+	}
 
 	async deleteRAGDoc(doc_tag:string,docId:string): Promise<string> {
 
@@ -126,7 +229,6 @@ export class RagsService extends ItemsService {
 
 		const url = serversInfo?.url+ragInfo.rag_id+'/'+docId
 		// const url = new  URL("http://localhost:3000/api/v1/document-store/loader/4cccaa89-0fff-42c7-b791-6de84934ae96/"+docId,);
-					//           http://localhost:3000/api/v1/document-store/loader/process/4cccaa89-0fff-42c7-b791-6de84934ae96/9c4bb384-fc10-4663-af27-65d6bf8931c4
 
 		try {
 			const res = await fetch(url, {
