@@ -62,12 +62,12 @@ export class ServersService extends ItemsService {
 		}
 	}
 
-	async gerateRAGUrl(key:PrimaryKey,RAGid:string ):Promise<{url:URL,  apikey: string, apisecret:string}|undefined>{
+	async gerateRAGUrl(key:PrimaryKey ):Promise<{url:URL,  apikey: string, apisecret:string}|undefined>{
 
 		const aiServer = await this.getServerByKey(key);
 
 		if(aiServer?.type ==='flowise'){
-			const url = new URL('api/v1/document-store/loader/process/'+RAGid, aiServer.url);
+			const url = new URL('api/v1/document-store/loader/process/', aiServer.url);
 			const apisecret = '0';
 
 			if(aiServer.apikey){
