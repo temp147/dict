@@ -19,6 +19,14 @@ export class DocumentsService extends ItemsService {
 
 	override async createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey> {
 		const result = await this.createMany([data], opts);
+
+		const ragsService = new RagsService({
+			accountability: this.accountability,
+			schema: this.schema
+		})
+
+		ragsService.createRAGDoc(result[0]!);
+
 		return result[0]!;
 	}
 

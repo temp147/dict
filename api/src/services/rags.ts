@@ -79,7 +79,7 @@ export class RagsService extends ItemsService {
 		}
 	}
 
-	async createRAGDoc(doc_tag:string): Promise<string> {
+	async createRAGDoc(docKey: PrimaryKey): Promise<string> {
 		//TODO create the RAG according to the the tags
 		//select the rag id from the nb_rag
 		//create the doc for each rag according to the doc type.
@@ -90,25 +90,28 @@ export class RagsService extends ItemsService {
 			accountability: this.accountability,
 		})
 
+		const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
+
+		const doc_tag = 'all'
+
 		//get rag basc info
 		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
 
 		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
-		const url = serversInfo?.url+'loader/save'+ragInfo.rag_id+'/'
-
+		const url = serversInfo?.url+'save'
 		const  formData = new FormData();
 
 		// formData.append("files",'file');
 		// formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
 		formData.append("loaderId", "plainText");
 		formData.append("storeId", ragInfo.rag_id);
-		formData.append("loaderName","Plain Text" );
-		formData.append("loaderConfig",JSON.stringify({"text":"context","textSplitter":"","metadata":"","omitMetadataKeys":""}))
+		formData.append("loaderName",docInfo.name );
+		formData.append("loaderConfig",JSON.stringify({"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}))
 
-		formData.append("splitterId","characterTextSplitter")
-		formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
-		formData.append("splitterName","Character Text Splitter")
+		// formData.append("splitterId","characterTextSplitter")
+		// formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
+		// formData.append("splitterName","Character Text Splitter")
 
 		// Add additional metadata to the document chunks
 		// formData.append("metadata", "{}");
@@ -120,6 +123,12 @@ export class RagsService extends ItemsService {
 		// formData.append("vectorStore", "");
 		// formData.append("recordManager", "");
 		// formData.append("docStore", "");
+
+// 		curl 'http://localhost:3000/api/v1/document-store/loader/save' \
+//   -H 'Content-Type: application/json' \
+//   -H 'Authorization: Bearer l18D9VFiUcfESJCoLSRcUjn/l/s4ZevPhA/fFzAjplA=' \
+//   -b 'method=POST;' \
+//   --data-raw '{"loaderId":"plainText","storeId":"4cccaa89-0fff-42c7-b791-6de84934ae96","loaderName":"test","loaderConfig":{"text":"testtesttesttesttesttesttest","textSplitter":"","metadata":"","omitMetadataKeys":""}}'
 
 
 		try {
