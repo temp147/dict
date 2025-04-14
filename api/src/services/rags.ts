@@ -99,16 +99,17 @@ export class RagsService extends ItemsService {
 
 		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
+		//todo add rag for other type documents
+		//todo store the doc_id for the documents.
 		const url = serversInfo?.url+'save'
-		const  formData = new FormData();
+		const  formData = JSON.stringify({"loaderId":"plainText","storeId":ragInfo.rag_id,"loaderName":docInfo.name,"loaderConfig":{"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
 
 		// formData.append("files",'file');
 		// formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
-		formData.append("loaderId", "plainText");
-		formData.append("storeId", ragInfo.rag_id);
-		formData.append("loaderName",docInfo.name );
-		formData.append("loaderConfig",JSON.stringify({"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}))
-
+		// formData.append("loaderId", "plainText");
+		// formData.append("storeId", ragInfo.rag_id);
+		// formData.append("loaderName",docInfo.name );
+		// formData.append("loaderConfig",JSON.stringify({"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}))
 		// formData.append("splitterId","characterTextSplitter")
 		// formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
 		// formData.append("splitterName","Character Text Splitter")
@@ -123,13 +124,6 @@ export class RagsService extends ItemsService {
 		// formData.append("vectorStore", "");
 		// formData.append("recordManager", "");
 		// formData.append("docStore", "");
-
-// 		curl 'http://localhost:3000/api/v1/document-store/loader/save' \
-//   -H 'Content-Type: application/json' \
-//   -H 'Authorization: Bearer l18D9VFiUcfESJCoLSRcUjn/l/s4ZevPhA/fFzAjplA=' \
-//   -b 'method=POST;' \
-//   --data-raw '{"loaderId":"plainText","storeId":"4cccaa89-0fff-42c7-b791-6de84934ae96","loaderName":"test","loaderConfig":{"text":"testtesttesttesttesttesttest","textSplitter":"","metadata":"","omitMetadataKeys":""}}'
-
 
 		try {
 			const res = await fetch(url, {
@@ -186,17 +180,6 @@ export class RagsService extends ItemsService {
 		formData.append("splitterId","characterTextSplitter")
 		formData.append("splitterConfig", JSON.stringify({"config":{"chunkSize":20000,"separator":""}}));
 		formData.append("splitterName","Character Text Splitter")
-
-		// Add additional metadata to the document chunks
-		// formData.append("metadata", "{}");
-		// Replace existing document with the new upserted chunks
-		// formData.append("replaceExisting", "true");
-		// Override existing configuration
-		// formData.append("loader", "");
-		// formData.append("embedding", "");
-		// formData.append("vectorStore", "");
-		// formData.append("recordManager", "");
-		// formData.append("docStore", "");
 
 		try {
 			const res = await fetch(url, {
