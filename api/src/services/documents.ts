@@ -27,8 +27,8 @@ export class DocumentsService extends ItemsService {
 			schema: this.schema
 		})
 
-		ragsService.createRAGDoc(result[0]!);//update the document info
-		ragsService.processRAGDoc(result[0]!);//process the rag
+		await ragsService.createRAGDoc(result[0]!);//update the document info
+		await ragsService.processRAGDoc(result[0]!);//process the rag
 
 		return result[0]!;
 	}
@@ -41,8 +41,8 @@ export class DocumentsService extends ItemsService {
 			schema: this.schema
 		})
 
-		ragsService.updateRAGDoc(key);//update the document info
-		ragsService.processRAGDoc(key);//process the rag
+		await ragsService.updateRAGDoc(key);//update the document info
+		await ragsService.processRAGDoc(key);//process the rag
 
 		return key;
 	}

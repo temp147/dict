@@ -1,6 +1,6 @@
 
 import getDatabase from '../database/index.js';
-import type { AbstractServiceOptions,Item,PrimaryKey } from '../types/index.js';
+import type { AbstractServiceOptions,PrimaryKey } from '../types/index.js';
 import { ItemsService } from './items.js';
 // import { useLogger } from '../logger.js';
 import { ServersService } from './servers.js'
@@ -263,7 +263,7 @@ export class RagsService extends ItemsService {
 		}
 	}
 
-	async getRAGId(tags: JSON): Promise<[string]>{
-		return ['1']
-	}
+	// async getRAGId(tags: JSON): Promise<[string]>{
+	// 	return ['1']
+	// }
 }
