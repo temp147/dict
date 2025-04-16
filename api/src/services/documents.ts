@@ -53,18 +53,26 @@ export class DocumentsService extends ItemsService {
 
 	override async deleteOne(key: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey> {
 
-		const ragDoc  = await this.knex.select('doc_id').from('nb_documents').where('id', key).first();
+		// const ragDoc  = await this.knex.select('doc_id').from('nb_documents').where('id', key).first();
+
+		const ragDoc = await this.knex('nb_rags')
+		.join('nb_documents', (join) => {
+		  join.on(
+				this.knex.raw('nb_documents.doc_tag::jsonb @> jsonb_build_array(nb_rags.doc_tag)')
+			);
+		}).where('nb_documents.id', key).select('nb_documents.doc_id','nb_rags.doc_tag')
 
 		const ragsService = new RagsService({
 			accountability: this.accountability,
 			schema: this.schema
 		})
-
 		// const ragKey = await this.knex.select(rag_id).from('nb_documents').join('nb_rags', 'nb_rags.tag')
 
-		const ragTag ='all';
-
-		ragsService.deleteRAGDoc(ragTag, ragDoc.doc_id);
+		// delete the doc in multiple rags
+		ragDoc.forEach((key) => {
+			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id);
+		})
+		// ragsService.deleteRAGDoc(ragTag, ragDoc[0].doc_id);
 
 		return await super.deleteOne(key,opts)
 	}

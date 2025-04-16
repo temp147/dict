@@ -1,0 +1,26 @@
+table: nb_ragdocs
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  rags:
+    type: uuid
+    references:
+      table: nb_rags
+      column: id
+    nullable: false
+  doc_id:
+    type: srting
+    length: 64
+  documents:
+    type: uuid
+    references:
+      table: nb_documents
+      column: id
+    nullable: false
+
+
+
+
