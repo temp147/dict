@@ -93,7 +93,15 @@ export class RagsService extends ItemsService {
 		//create the doc for each rag according to the doc type.
 		//then store the docId
 
-		const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
+		const docInfos = await this.knex('nb_rags')
+		.join('nb_documents', (join) => {
+		  join.on(
+				this.knex.raw('nb_documents.doc_tag::jsonb @> jsonb_build_array(nb_rags.doc_tag)')
+			);
+		}).where('nb_documents.id', docKey).select('nb_documents.doctype','nb_documents.doc_file','nb_documents.doc_text','nb_documents.doctype','nb_documents.name','nb_rags.doc_tag')
+
+
+		// const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
 
 		const doc_tag = 'all'
 
@@ -107,10 +115,46 @@ export class RagsService extends ItemsService {
 
 		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
+		const url = serversInfo?.url+'save'
+
+		docInfos.forEach(async (key) => {
+
+			const  formData = JSON.stringify({"loaderId":"plainText","storeId":ragInfo.rag_id,"loaderName":key.name,"loaderConfig":{"text":key.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
+
+			try {
+				const res = await fetch(url, {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + serversInfo?.apikey
+					},
+					body: formData
+				})
+
+				if(!res.ok){
+					throw new Error(`[${res.status}] ${await res.text()}`)
+				}else{
+					const ragRes = res.json() as Promise<RagRes>
+
+					const doc_id =  (await ragRes).id
+
+					await  this.knex('nb_ragdocs').insert({'doc_id': doc_id,'rags': key.rag_id, 'documents':key.doc_id})
+
+					return doc_tag
+				}
+			} catch (error: any) {
+					// logger.error(error);
+					return 'undefined'
+
+				}
+		});
+
+		return 'test'
+
 		//todo add rag for other type documents
 		//todo store the doc_id for the documents.
-		const url = serversInfo?.url+'save'
-		const  formData = JSON.stringify({"loaderId":"plainText","storeId":ragInfo.rag_id,"loaderName":docInfo.name,"loaderConfig":{"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
+
+		// const  formData = JSON.stringify({"loaderId":"plainText","storeId":ragInfo.rag_id,"loaderName":docInfo.name,"loaderConfig":{"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
 
 		// formData.append("files",'file');
 		// formData.append("docId", "c9121efa-1ce1-4708-af06-32a59abd720b");
@@ -133,34 +177,34 @@ export class RagsService extends ItemsService {
 		// formData.append("recordManager", "");
 		// formData.append("docStore", "");
 
-		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + serversInfo?.apikey
-				},
-				body: formData
-			})
+		// try {
+		// 	const res = await fetch(url, {
+		// 		method: 'POST',
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 			"Authorization": "Bearer " + serversInfo?.apikey
+		// 		},
+		// 		body: formData
+		// 	})
 
-			// logger.error(res.ok)
+		// 	// logger.error(res.ok)
 
-			if(!res.ok){
-				throw new Error(`[${res.status}] ${await res.text()}`)
-			}else{
-				const ragRes = res.json() as Promise<RagRes>
+		// 	if(!res.ok){
+		// 		throw new Error(`[${res.status}] ${await res.text()}`)
+		// 	}else{
+		// 		const ragRes = res.json() as Promise<RagRes>
 
-				const doc_id =  (await ragRes).id
+		// 		const doc_id =  (await ragRes).id
 
-				await  this.knex('nb_documents').update({'doc_id': doc_id }).where('id', '=', docKey)
+		// 		await  this.knex('nb_documents').update({'doc_id': doc_id }).where('id', '=', docKey)
 
-				return doc_tag
-			}
-		} catch (error: any) {
-			// logger.error(error);
-			return 'undefined'
+		// 		return doc_tag
+		// 	}
+		// } catch (error: any) {
+		// 	// logger.error(error);
+		// 	return 'undefined'
 
-		}
+		// }
 	}
 
 	async processRAGDoc(docKey:PrimaryKey): Promise<string> {
