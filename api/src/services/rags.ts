@@ -4,6 +4,7 @@ import type { AbstractServiceOptions,PrimaryKey } from '../types/index.js';
 import { ItemsService } from './items.js';
 // import { useLogger } from '../logger.js';
 import { ServersService } from './servers.js'
+import { v4 as uuid } from 'uuid';
 
 // const APIKEY ='l18D9VFiUcfESJCoLSRcUjn/l/s4ZevPhA/fFzAjplA=';
 // const logger = useLogger();
@@ -43,8 +44,6 @@ export class RagsService extends ItemsService {
 		})
 
 		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
-
-		// todo, check why upsert function not working,
 
 		// const url = serversInfo?.url+'upsert/'+ragInfo.rag_id
 
@@ -98,7 +97,7 @@ export class RagsService extends ItemsService {
 		  join.on(
 				this.knex.raw('nb_documents.doc_tag::jsonb @> jsonb_build_array(nb_rags.doc_tag)')
 			);
-		}).where('nb_documents.id', docKey).select('nb_documents.doctype','nb_documents.doc_file','nb_documents.doc_text','nb_documents.doctype','nb_documents.name','nb_rags.doc_tag')
+		}).where('nb_documents.id', docKey).select('nb_documents.doctype','nb_documents.doc_file','nb_documents.doc_text','nb_documents.name','nb_rags.doc_tag','nb_rags.servers','nb_rags.rag_id','nb_rags.id')
 
 
 		// const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
@@ -106,20 +105,25 @@ export class RagsService extends ItemsService {
 		const doc_tag = 'all'
 
 		//get rag basc info
-		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+		// const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
 
 		const  serversService = new ServersService({
 			schema: this.schema,
 			accountability: this.accountability,
 		})
 
-		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+		// const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
-		const url = serversInfo?.url+'save'
+		// const url = serversInfo?.url+'save'
 
 		docInfos.forEach(async (key) => {
 
-			const  formData = JSON.stringify({"loaderId":"plainText","storeId":ragInfo.rag_id,"loaderName":key.name,"loaderConfig":{"text":key.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
+
+			const serversInfo = await serversService.gerateRAGUrl(key.servers)
+
+			const url = serversInfo?.url+'save'
+
+			const  formData = JSON.stringify({"loaderId":"plainText","storeId":key.rag_id,"loaderName":key.name,"loaderConfig":{"text":key.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
 
 			try {
 				const res = await fetch(url, {
@@ -138,7 +142,9 @@ export class RagsService extends ItemsService {
 
 					const doc_id =  (await ragRes).id
 
-					await  this.knex('nb_ragdocs').insert({'doc_id': doc_id,'rags': key.rag_id, 'documents':key.doc_id})
+					const ragdocs_id = uuid();
+
+					await  this.knex('nb_ragdocs').insert({'id':ragdocs_id,'doc_id': doc_id,'rags': key.id, 'documents':docKey})
 
 					return doc_tag
 				}
