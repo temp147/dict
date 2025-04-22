@@ -31,19 +31,70 @@ export class RagsService extends ItemsService {
 
 	async updateRAGDoc(docKey:PrimaryKey): Promise<string> {
 
-		const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
+		// const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
 
-		const doc_tag = 'all'
+
+		const docInfos = await this.knex('nb_ragdocs')
+		.join('nb_documents','nb_ragdocs.documents','nb_documents.id')
+		.join('nb_rags','nb_ragdocs.rags','nb_rags.id')
+		.where('nb_ragdocs.documents', docKey)
+		.select('nb_ragdocs.doc_id','nb_documents.doc_text','nb_documents.doctype','nb_documents.doc_tag','nb_ragdocs.rags','nb_ragdocs.id','nb_documents.doc_file','nb_rags.servers','nb_rags.rag_id','nb_documents.name')
+
+
+		// const doc_tag = 'all'
 
 		//get rag basc info
-		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+		// const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
 
 		const  serversService = new ServersService({
 			schema: this.schema,
 			accountability: this.accountability,
 		})
 
-		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+		docInfos.forEach(async (key) => {
+
+			const serversInfo = await serversService.gerateRAGUrl(key.servers);
+
+			const url = serversInfo?.url+'save';
+
+			const  formData = JSON.stringify({
+				"loaderId":"plainText",
+				"id":key.doc_id,
+				"storeId":key.rag_id,
+				"loaderName":key.name,
+				"loaderConfig":{"text":key.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}
+			})
+
+
+			try {
+				const res = await fetch(url, {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + serversInfo?.apikey
+					},
+					body: formData
+				})
+
+				if(!res.ok){
+					throw new Error(`[${res.status}] ${await res.text()}`)
+				}else{
+					return key.doc_tag
+				}
+			} catch (error: any) {
+				// logger.error(error);
+				return 'undefined'
+
+			}
+
+		});
+
+		await this.processRAGDoc(docKey);
+
+		return 'key'
+
+
+		// const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
 
 		// const url = serversInfo?.url+'upsert/'+ragInfo.rag_id
 
@@ -60,30 +111,6 @@ export class RagsService extends ItemsService {
 		// 	}
 		// })
 
-		const url = serversInfo?.url+'save'
-		const  formData = JSON.stringify({"loaderId":"plainText","id":docInfo.doc_id,"storeId":ragInfo.rag_id,"loaderName":docInfo.name,"loaderConfig":{"text":docInfo.doc_text,"textSplitter":"","metadata":"","omitMetadataKeys":""}})
-
-
-		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + serversInfo?.apikey
-				},
-				body: formData
-			})
-
-			if(!res.ok){
-				throw new Error(`[${res.status}] ${await res.text()}`)
-			}else{
-				return doc_tag
-			}
-		} catch (error: any) {
-			// logger.error(error);
-			return 'undefined'
-
-		}
 	}
 
 	async createRAGDoc(docKey: PrimaryKey): Promise<string> {
@@ -102,7 +129,7 @@ export class RagsService extends ItemsService {
 
 		// const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
 
-		const doc_tag = 'all'
+		// const doc_tag = 'all'
 
 		//get rag basc info
 		// const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
@@ -117,7 +144,6 @@ export class RagsService extends ItemsService {
 		// const url = serversInfo?.url+'save'
 
 		docInfos.forEach(async (key) => {
-
 
 			const serversInfo = await serversService.gerateRAGUrl(key.servers)
 
@@ -146,7 +172,8 @@ export class RagsService extends ItemsService {
 
 					await  this.knex('nb_ragdocs').insert({'id':ragdocs_id,'doc_id': doc_id,'rags': key.id, 'documents':docKey})
 
-					return doc_tag
+
+					return
 				}
 			} catch (error: any) {
 					// logger.error(error);
@@ -226,54 +253,101 @@ export class RagsService extends ItemsService {
 
 		//get rag basc info
 
-		const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
+		// const docInfo = await this.knex.select('doc_id','doctype','doc_file','doc_tag','doc_text','name').from('nb_documents').where('id', docKey).first();
 
-		const doc_tag = 'all'
+		const docInfos = await this.knex('nb_ragdocs')
+		.join('nb_documents','nb_ragdocs.documents','nb_documents.id')
+		.join('nb_rags','nb_ragdocs.rags','nb_rags.id')
+		.where('nb_ragdocs.documents', docKey)
+		.select('nb_ragdocs.doc_id','nb_documents.doc_text','nb_documents.doc_tag','nb_ragdocs.rags','nb_ragdocs.id','nb_documents.doc_file','nb_rags.servers','nb_rags.rag_id')
 
-		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+		// const doc_tag = 'all'
 
-		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+		docInfos.forEach(async (key) => {
+			const serversInfo = await serversService.gerateRAGUrl(key.servers)
 
-		const url = serversInfo?.url+'process/'+docInfo.doc_id
-		// const url = new  URL("http://localhost:3000/api/v1/document-store/loader/process/4cccaa89-0fff-42c7-b791-6de84934ae96/,);
+			const url = serversInfo?.url+'process/'+key.doc_id
 
-		const  formData = JSON.stringify({
-			"loaderId":"plainText",
-			"id":docInfo.doc_id,
-			"storeId":ragInfo.rag_id,
-			"loaderName":"test",
-			"loaderConfig":{
-				"text":docInfo.doc_text,
-				"textSplitter":"","metadata":"","omitMetadataKeys":""
-			}
-		})
-
-		try {
-			const res = await fetch(url, {
-				method: 'POST',
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + serversInfo?.apikey
-				},
-				body: formData
+			const  formData = JSON.stringify({
+				"loaderId":"plainText",
+				"id":key.doc_id,
+				"storeId":key.rag_id,
+				"loaderName":"test",
+				"loaderConfig":{
+					"text":key.doc_text,
+					"textSplitter":"","metadata":"","omitMetadataKeys":""
+				}
 			})
 
-			// logger.error(res.ok)
+			try {
+				const res = await fetch(url, {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + serversInfo?.apikey
+					},
+					body: formData
+				})
 
-			if(!res.ok){
-				throw new Error(`[${res.status}] ${await res.text()}`)
-			}else{
-				// return res.json()
-				return doc_tag
+				if(!res.ok){
+					throw new Error(`[${res.status}] ${await res.text()}`)
+				}else{
+					return key.doc_tag
+				}
+			} catch (error: any) {
+				// logger.error(error);
+				return 'undefined'
+
 			}
-		} catch (error: any) {
-			// logger.error(error);
-			return 'undefined'
 
-		}
+		})
+
+		return 'done';
+
+		// const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+
+		// const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+
+		// const url = serversInfo?.url+'process/'+docInfo.doc_id
+		// const url = new  URL("http://localhost:3000/api/v1/document-store/loader/process/4cccaa89-0fff-42c7-b791-6de84934ae96/,);
+
+		// const  formData = JSON.stringify({
+		// 	"loaderId":"plainText",
+		// 	"id":docInfo.doc_id,
+		// 	"storeId":ragInfo.rag_id,
+		// 	"loaderName":"test",
+		// 	"loaderConfig":{
+		// 		"text":docInfo.doc_text,
+		// 		"textSplitter":"","metadata":"","omitMetadataKeys":""
+		// 	}
+		// })
+
+		// try {
+		// 	const res = await fetch(url, {
+		// 		method: 'POST',
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 			"Authorization": "Bearer " + serversInfo?.apikey
+		// 		},
+		// 		body: formData
+		// 	})
+
+		// 	// logger.error(res.ok)
+
+		// 	if(!res.ok){
+		// 		throw new Error(`[${res.status}] ${await res.text()}`)
+		// 	}else{
+		// 		// return res.json()
+		// 		return doc_tag
+		// 	}
+		// } catch (error: any) {
+		// 	// logger.error(error);
+		// 	return 'undefined'
+
+		// }
 	}
 
-	async deleteRAGDoc(doc_tag:string,docId:string): Promise<string> {
+	async deleteRAGDoc(doc_tag:string,docId:string, servers:string, rag_id:string): Promise<string> {
 
 		const  serversService = new ServersService({
 			schema: this.schema,
@@ -281,12 +355,12 @@ export class RagsService extends ItemsService {
 		})
 
 		//get rag basc info
-		const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
+		// const ragInfo = await this.knex.select('servers','rag_id').from('nb_rags').where('doc_tag', doc_tag).first();
 
 		//get the rag server address and appkey
-		const serversInfo = await serversService.gerateRAGUrl(ragInfo.servers)
+		const serversInfo = await serversService.gerateRAGUrl(servers)
 
-		const url = serversInfo?.url+ragInfo.rag_id+'/'+docId
+		const url = serversInfo?.url+rag_id+'/'+docId
 		// const url = new  URL("http://localhost:3000/api/v1/document-store/loader/4cccaa89-0fff-42c7-b791-6de84934ae96/"+docId,);
 
 		try {

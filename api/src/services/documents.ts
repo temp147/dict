@@ -28,6 +28,7 @@ export class DocumentsService extends ItemsService {
 		})
 
 		await ragsService.createRAGDoc(result[0]!);//update the document info
+
 		await ragsService.processRAGDoc(result[0]!);//process the rag
 
 		return result[0]!;
@@ -42,6 +43,7 @@ export class DocumentsService extends ItemsService {
 		})
 
 		await ragsService.updateRAGDoc(key);//update the document info
+
 		await ragsService.processRAGDoc(key);//process the rag
 
 		return key;
@@ -55,22 +57,22 @@ export class DocumentsService extends ItemsService {
 
 		// const ragDoc  = await this.knex.select('doc_id').from('nb_documents').where('id', key).first();
 
-		const ragDoc = await this.knex('nb_rags')
-		.join('nb_documents', (join) => {
-		  join.on(
-				this.knex.raw('nb_documents.doc_tag::jsonb @> jsonb_build_array(nb_rags.doc_tag)')
-			);
-		}).where('nb_documents.id', key).select('nb_documents.doc_id','nb_rags.doc_tag')
+
+		const ragDocs  = await this.knex('nb_ragdocs')
+		.join('nb_documents','nb_ragdocs.documents','nb_documents.id')
+		.join('nb_rags','nb_ragdocs.rags','nb_rags.id')
+		.where('nb_ragdocs.documents', key)
+		.select('nb_ragdocs.doc_id','nb_documents.doc_tag','nb_ragdocs.rags','nb_ragdocs.id','nb_documents.doc_file','nb_rags.servers','nb_rags.rag_id')
+
 
 		const ragsService = new RagsService({
 			accountability: this.accountability,
 			schema: this.schema
 		})
-		// const ragKey = await this.knex.select(rag_id).from('nb_documents').join('nb_rags', 'nb_rags.tag')
 
 		// delete the doc in multiple rags
-		ragDoc.forEach((key) => {
-			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id);
+		ragDocs.forEach((key) => {
+			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
 		})
 		// ragsService.deleteRAGDoc(ragTag, ragDoc[0].doc_id);
 
@@ -82,19 +84,25 @@ export class DocumentsService extends ItemsService {
 	 */
 	override async deleteMany(keys: PrimaryKey[], opts?: MutationOptions): Promise<PrimaryKey[]> {
 
-		const ragDoc  = await this.knex.select('doc_id','doc_tag').from('nb_documents').whereIn('id', keys)
+		//todo: verfity delete many function
+
+		const ragDocs  = await this.knex('nb_ragdocs')
+		.join('nb_documents','nb_ragdocs.documents','nb_documents.id')
+		.join('nb_rags','nb_ragdocs.rags','nb_rags.id')
+		.whereIn('nb_ragdocs.documents', keys)
+		.select('nb_ragdocs.doc_id','nb_documents.doc_tag','nb_ragdocs.rags','nb_ragdocs.id','nb_documents.doc_file','nb_rags.servers','nb_rags.rag_id')
+
 
 		const ragsService = new RagsService({
 			accountability: this.accountability,
 			schema: this.schema
 		})
 
-		// todo delete the rag doc by ragTag
-		const ragTag ='all';
+		// const ragTag ='all';
 
-		ragDoc.forEach((key) => {
+		ragDocs.forEach((key) => {
 			// ragsService.deleteRAGDoc(key.doc_tag, key.doc_id);
-			ragsService.deleteRAGDoc(ragTag, key.doc_id);
+			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
 		});
 
 		await super.deleteMany(keys, opts);
