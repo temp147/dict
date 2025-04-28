@@ -28,6 +28,7 @@ export class RagsService extends ItemsService {
 
 	async updateRAGDoc(docKey:PrimaryKey): Promise<string> {
 
+		//get rag basc info
 		const docInfos = await this.knex('nb_ragdocs')
 		.join('nb_documents','nb_ragdocs.documents','nb_documents.id')
 		.join('nb_rags','nb_ragdocs.rags','nb_rags.id')
@@ -39,7 +40,7 @@ export class RagsService extends ItemsService {
 			accountability: this.accountability,
 		})
 
-		if (docInfos[0].doctype === 'string') {
+		if (docInfos[0].doctype === 'string') { //if the doc is plain text
 			for (const key of docInfos) {
 				const serversInfo = await serversService.gerateRAGUrl(key.servers);
 
@@ -68,7 +69,7 @@ export class RagsService extends ItemsService {
 				}
 			}
 
-		}else{
+		}else{  //if the doc is not  plain text , get the file from the assets service and convert it to base64
 			const assetsService = new AssetsService({
 				schema: this.schema,
 				accountability: this.accountability,
@@ -247,6 +248,8 @@ export class RagsService extends ItemsService {
 
 		if (docInfos[0].doctype === 'string') {
 
+
+			// for (const key of docInfos) {
 			docInfos.forEach(async (key) => {
 				const serversInfo = await serversService.gerateRAGUrl(key.servers)
 
@@ -288,6 +291,7 @@ export class RagsService extends ItemsService {
 			const fileBase64 = await this.streamToBase64(stream, file.type || 'text/plain');
 
 			docInfos.forEach(async (key) => {
+			// for (const key of docInfos) {
 				const serversInfo = await serversService.gerateRAGUrl(key.servers)
 
 				const url = serversInfo?.url+'process/'+key.doc_id

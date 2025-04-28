@@ -71,9 +71,10 @@ export class DocumentsService extends ItemsService {
 		})
 
 		// delete the doc in multiple rags
-		ragDocs.forEach((key) => {
-			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
-		})
+
+		for (const key of ragDocs) {
+			await ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
+		}
 		// ragsService.deleteRAGDoc(ragTag, ragDoc[0].doc_id);
 
 		return await super.deleteOne(key,opts)
@@ -98,12 +99,11 @@ export class DocumentsService extends ItemsService {
 			schema: this.schema
 		})
 
-		// const ragTag ='all';
 
-		ragDocs.forEach((key) => {
-			// ragsService.deleteRAGDoc(key.doc_tag, key.doc_id);
-			ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
-		});
+		for (const key of ragDocs) {
+			await ragsService.deleteRAGDoc(key.doc_tag, key.doc_id, key.servers,key.rag_id);
+		}
+
 
 		await super.deleteMany(keys, opts);
 		return keys;
