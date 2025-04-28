@@ -42,7 +42,7 @@ export class RagsService extends ItemsService {
 
 		if (docInfos[0].doctype === 'string') { //if the doc is plain text
 			for (const key of docInfos) {
-				const serversInfo = await serversService.gerateRAGUrl(key.servers);
+				const serversInfo = await serversService.gerateRAGUrl(key.servers); // get the basic server info
 
 				const url = serversInfo?.url + 'save';
 
@@ -75,12 +75,12 @@ export class RagsService extends ItemsService {
 				accountability: this.accountability,
 			});
 
-			const { stream, file } = await assetsService.getAsset(docInfos[0].doc_file);
+			const { stream, file } = await assetsService.getAsset(docInfos[0].doc_file); //get the file from the assets service
 
-			const fileBase64 = await this.streamToBase64(stream, file.type || 'text/plain');
+			const fileBase64 = await this.streamToBase64(stream, file.type || 'text/plain'); //convert the file to base64
 
 			for (const key of docInfos) {
-				const serversInfo = await serversService.gerateRAGUrl(key.servers);
+				const serversInfo = await serversService.gerateRAGUrl(key.servers);// get the basic server info
 
 				const url = serversInfo?.url + 'save';
 
@@ -114,10 +114,9 @@ export class RagsService extends ItemsService {
 	}
 
 	async createRAGDoc(docKey: PrimaryKey): Promise<string> {
-		//select the rag id from the nb_rag
-		//create the doc for each rag according to the doc type.
-		//then store the docId
 
+		//select the rag id from the nb_rag
+		//create the doc for each rag according to the doc type ,then store the docId.
 		const docInfos = await this.knex('nb_rags')
 		.join('nb_documents', (join) => {
 		  join.on(
@@ -132,15 +131,15 @@ export class RagsService extends ItemsService {
 		})
 
 
-		if (docInfos[0].doctype === 'string') {
+		if (docInfos[0].doctype === 'string') {//if the doc is plain text
 
 			for (const key of docInfos) {
-				const serversInfo = await serversService.gerateRAGUrl(key.servers);
+				const serversInfo = await serversService.gerateRAGUrl(key.servers);// get the basic server info
 
 				const url = serversInfo?.url + 'save';
 
 
-				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,'',key.doc_text,''));
+				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,'',key.doc_text,'')); // create the form data
 
 				try {
 					const res = await fetch(url, {
@@ -157,10 +156,11 @@ export class RagsService extends ItemsService {
 					} else {
 						const ragRes = res.json() as Promise<RagRes>;
 
-						const doc_id = (await ragRes).id;
+						const doc_id = (await ragRes).id;// get the doc id from the response
 
-						const ragdocs_id = uuid();
+						const ragdocs_id = uuid();//create a new id for the ragdocs
 
+						// insert the doc id and rag id into the nb_ragdocs table
 						await this.knex('nb_ragdocs').insert({
 							'id': ragdocs_id,
 							'doc_id': doc_id,
@@ -180,17 +180,17 @@ export class RagsService extends ItemsService {
 				accountability: this.accountability,
 			});
 
-			const { stream, file } = await assetsService.getAsset(docInfos[0].doc_file);
+			const { stream, file } = await assetsService.getAsset(docInfos[0].doc_file); //get the file from the assets service
 
-			const fileBase64 = await this.streamToBase64(stream, file.type || 'text/plain');
+			const fileBase64 = await this.streamToBase64(stream, file.type || 'text/plain');//convert the file to base64
 
-			for (const key of docInfos) {
+			for (const key of docInfos) { //for each rag, create a new doc
 				const serversInfo = await serversService.gerateRAGUrl(key.servers);
 
 				const url = serversInfo?.url + 'save';
 				// const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,'',key.doc_text,''));
 
-				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,fileBase64,'',file.filename_download))
+				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,fileBase64,'',file.filename_download)) // create the form data
 
 				try {
 					const res = await fetch(url, {
@@ -207,10 +207,11 @@ export class RagsService extends ItemsService {
 					} else {
 						const ragRes = res.json() as Promise<RagRes>;
 
-						const doc_id = (await ragRes).id;
+						const doc_id = (await ragRes).id;// get the doc id from the response
 
-						const ragdocs_id = uuid();
+						const ragdocs_id = uuid();//create a new id for the ragdocs
 
+						// insert the doc id and rag id into the nb_ragdocs table
 						await this.knex('nb_ragdocs').insert({
 							'id': ragdocs_id,
 							'doc_id': doc_id,
@@ -228,10 +229,9 @@ export class RagsService extends ItemsService {
 		return 'test'
 	}
 
+	// process the rag doc according to the docKey
+
 	async processRAGDoc(docKey:PrimaryKey): Promise<string> {
-		//select the rag id from the nb_rag
-		//create the doc for each rag according to the doc type.
-		//then store the docId
 
 		const  serversService = new ServersService({
 			schema: this.schema,
@@ -248,14 +248,13 @@ export class RagsService extends ItemsService {
 
 		if (docInfos[0].doctype === 'string') {
 
-
 			// for (const key of docInfos) {
 			docInfos.forEach(async (key) => {
 				const serversInfo = await serversService.gerateRAGUrl(key.servers)
 
-				const url = serversInfo?.url+'process/'+key.doc_id
+				const url = serversInfo?.url+'process/'+key.doc_id  //build the process url
 
-				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,'',key.doc_text,'',key.doc_id));
+				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,'',key.doc_text,'',key.doc_id));// create the form data
 
 				try {
 					const res = await fetch(url, {
@@ -380,9 +379,10 @@ export class RagsService extends ItemsService {
 
 	};
 
+
+	// Build the form data based on the docType.
 	private buildFormData(docType: string, rag_id: string, name: string, fileBase64: string, doc_text: string ,filename_download: string, doc_id?: string ): object| undefined {
 
-		// build the form data based on the docType
 
 		let formData
 
