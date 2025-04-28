@@ -12,7 +12,7 @@ import { sanitizeQuery } from '../utils/sanitize-query.js';
 
 const router = express.Router();
 
-router.use(useCollection('directus_documents'));
+router.use(useCollection('nb_documents'));
 
 router.post(
 	'/',
@@ -169,8 +169,6 @@ router.delete(
 			await service.deleteByQuery(sanitizedQuery);
 		}
 
-		// service.deleteRAGDoc(req.body.keys);
-
 		return next();
 	}),
 	respond,
@@ -185,8 +183,6 @@ router.delete(
 		})
 
 		await service.deleteOne(req.params['pk']!);
-
-		// service.deleteRAGDoc(req.body.keys);
 
 		return next();
 	}),
