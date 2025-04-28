@@ -2,7 +2,7 @@
 import getDatabase from '../database/index.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
-import pinyin from 'pinyin'
+// import pinyin from 'pinyin'
 import { WechatService } from './wechatapp/index.js';
 import { useLogger } from '../logger.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -109,8 +109,9 @@ export class PersoninfosService extends ItemsService {
 
 		if (isChinese) {
 			// 如果是中文，用pinyin库获取拼音首字母
-			const pinyinArr = pinyin(name, { style: pinyin.STYLE_FIRST_LETTER });
-			return pinyinArr && pinyinArr[0] && pinyinArr[0][0] ? pinyinArr[0][0].toUpperCase() : '#';
+			// const pinyinArr = pinyin(name, { style: pinyin.STYLE_FIRST_LETTER });
+			// return pinyinArr && pinyinArr[0] && pinyinArr[0][0] ? pinyinArr[0][0].toUpperCase() : '#';
+			return ''
 		} else if (isEnglish) {
 			// 如果是英文，直接获取首字母
 			return name.charAt(0).toUpperCase();

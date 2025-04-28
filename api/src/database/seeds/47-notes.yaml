@@ -37,12 +37,6 @@ columns:
     references:
       table: directus_users
       column: id
-  tasks:
-    type: uuid
-    nullable: false
-    references:
-      table: nb_tasks
-      column: id
   category: #类型
     type: string
   filetype: #文件类型

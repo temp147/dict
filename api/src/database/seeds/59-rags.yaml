@@ -1,0 +1,24 @@
+table: nb_rags
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+  rag_id:
+    type: string
+  doc_tag: # One of : 'all','teenage','career'
+    type: string
+    length: 8
+  servers:
+    type: uuid
+    references:
+      table: nb_servers
+      column: id
+    nullable: false
+
+
+
+

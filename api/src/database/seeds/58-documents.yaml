@@ -1,0 +1,37 @@
+table: nb_documents
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name :
+    type: string
+  doctype:
+    type: string # One of : 'doc','txt','pdf','csv','html','page'
+    length: 8
+  users:
+    type: uuid
+    nullable: false
+    references:
+      table: directus_users
+      column: id
+  doc_id:
+    type: string
+    length: 64
+  doc_file:
+    type: uuid
+    references:
+      table: directus_files
+      column: id
+    nullable: true
+  doc_text:
+    type: text
+  doc_tag:
+    type: json
+  last_updated:
+    type: timestamp
+
+
+
+
