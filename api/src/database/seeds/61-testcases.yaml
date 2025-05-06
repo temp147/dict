@@ -1,0 +1,29 @@
+table: nb_testcases
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  name:
+    type: string
+    length: 256
+  input_question:
+    type: text
+  input_flowid:
+    type: uuid
+    references:
+      table: nb_agents
+      column: id
+  verify_text:
+    type: text
+  verify_flowid:
+    type: uuid
+    references:
+      table: nb_agents
+      column: id
+
+
+
+
+
