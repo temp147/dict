@@ -82,7 +82,7 @@ export class RagsService extends ItemsService {
 			for (const key of docInfos) {
 				const serversInfo = await serversService.gerateRAGUrl(key.servers);// get the basic server info
 
-				const url = serversInfo?.url + 'save';
+				const url = serversInfo?.url + 'save'; //build the save url 
 
 				const formData = JSON.stringify(this.buildFormData(key.doctype, key.rag_id,key.name,fileBase64,'',file.filename_download,key.doc_id))
 
