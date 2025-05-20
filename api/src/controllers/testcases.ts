@@ -80,6 +80,54 @@ const readHandler = asyncHandler(async (req, res, next) => {
 	return next();
 });
 
+router.get(
+	'/hq',
+	asyncHandler(async (req, res, next) => {
+		const service = new TestCasesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const record = await service.readHardQuestion();
+
+		res.locals['payload'] = { data: record || null };
+		return next();
+	}),
+	respond,
+);
+
+router.get(
+	'/sq',
+	asyncHandler(async (req, res, next) => {
+		const service = new TestCasesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const record = await service.readSensitiveQuestion();
+
+		res.locals['payload'] = { data: record || null };
+		return next();
+	}),
+	respond,
+);
+
+router.get(
+	'/pq',
+	asyncHandler(async (req, res, next) => {
+		const service = new TestCasesService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const record = await service.readPersonalQuestion();
+
+		res.locals['payload'] = { data: record || null };
+		return next();
+	}),
+	respond,
+);
+
 router.get('/', validateBatch('read'), readHandler, respond);
 router.search('/', validateBatch('read'), readHandler, respond);
 

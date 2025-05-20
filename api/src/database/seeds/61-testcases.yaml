@@ -22,6 +22,8 @@ columns:
     references:
       table: nb_agents
       column: id
+  catalog:
+    type: string ## one of the deepth
 
 
 

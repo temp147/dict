@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { beforeAll, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import axios from 'axios';
 
 
@@ -116,13 +116,15 @@ async function fetchTestCases(collection: string) {
   return response.data.data;
 }
 
-describe('测试RAG流程', () => {
-  let ragScenarios;
+describe('测试RAG流程', async () => {
+  // let ragScenarios;
+	const ragScenarios = await fetchTestCases('nb_testcases');
 
-  beforeAll(async () => {
-    // 从 Directus 获取 RAG 测试用例
-    ragScenarios = await fetchTestCases('rag_scenarios'); // 替换为 Directus 中存储 RAG 测试用例的集合名称
-  });
+  // beforeAll(async () => {
+  //   // 从 Directus 获取 RAG 测试用例
+  //   / 替换为 Directus 中存储 RAG 测试用例的集合名称
+  // });
+
 
   for (const scenario of ragScenarios) {
     test(scenario.name, async () => {
@@ -150,13 +152,15 @@ describe('测试RAG流程', () => {
   }
 });
 
-describe('测试敏感问题', () => {
-  let commonScenarios;
+describe('测试敏感问题', async () => {
+  // let commonScenarios;
 
-  beforeAll(async () => {
-    // 从 Directus 获取敏感问题测试用例
-    commonScenarios = await fetchTestCases('common_scenarios'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
-  });
+  // beforeAll(async () => {
+  //   // 从 Directus 获取敏感问题测试用例
+  //   // 替换为 Directus 中存储敏感问题测试用例的集合名称
+  // });
+
+	const commonScenarios = await fetchTestCases('nb_testcases');
 
   for (const scenario of commonScenarios) {
     test(scenario.name, async () => {

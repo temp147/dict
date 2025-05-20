@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
 		table.uuid('input_flowid').references('id').inTable('nb_agents').onDelete('CASCADE');
 		table.text('verify_text');
 		table.uuid('verify_flowid').references('id').inTable('nb_agents').onDelete('CASCADE');
+		table.string('catalog');
 	});
 
 }
