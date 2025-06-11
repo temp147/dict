@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test,beforeAll } from 'vitest';
 import axios from 'axios';
 
 // const flowServer = 'https://flowise.metacause.cn'
@@ -101,7 +101,7 @@ import axios from 'axios';
 const flowServer = 'http://localhost:3000';
 const directusServer = 'http://localhost:8080'; // 替换为你的 Directus 实例地址
 const directusUser = 'admin@example.com'; // 替换为你的 Directus API 访问令牌
-const userPassword = 'KQA0c6UakS3B'; // 替换为你的 Directus API 访问令牌
+const userPassword = ''; // 替换为你的 Directus API 访问令牌
 
 
 const directusResponse   = await request(directusServer)
@@ -124,12 +124,12 @@ async function fetchTestCases(collection: string, address: string) {
 }
 
 describe('测试RAG流程', async () => {
-  // let ragScenarios: any[] = [];
-	const ragScenarios = await fetchTestCases('nb_testcases', 'hq');
+
+  let ragScenarios: any[] = [];
 
   beforeAll(async () => {
     // 从 Directus 获取 RAG 测试用例
-    ragScenarios = await fetchTestCases('rag_scenarios') ?? []; // 替换为 Directus 中存储 RAG 测试用例的集合名称
+    ragScenarios = await fetchTestCases('rag_scenarios', 'hq') ?? []; // 替换为 Directus 中存储 RAG 测试用例的集合名称
   });
 
   test('RAG 测试用例', async () => {
@@ -166,7 +166,7 @@ describe('测试敏感问题', () => {
 
   beforeAll(async () => {
     // 从 Directus 获取敏感问题测试用例
-    commonScenarios = await fetchTestCases('common_scenarios'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+    commonScenarios = await fetchTestCases('common_scenarios','sq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
   });
 
   test('敏感问题测试用例', async () => {
@@ -203,7 +203,12 @@ describe('测试人设问题', async () => {
   //   // 替换为 Directus 中存储敏感问题测试用例的集合名称
   // });
 
-	const commonScenarios = await fetchTestCases('nb_testcases','pq');
+	  let commonScenarios: any[] = [];
+
+  beforeAll(async () => {
+    // 从 Directus 获取敏感问题测试用例
+    commonScenarios = await fetchTestCases('common_scenarios','pq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+  });
 
   for (const scenario of commonScenarios) {
     test(scenario.name, async () => {
