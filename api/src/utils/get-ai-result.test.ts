@@ -117,15 +117,15 @@ async function fetchTestCases(collection: string) {
 }
 
 describe('测试RAG流程', () => {
-  let ragScenarios;
+  let ragScenarios: any[] = [];
 
   beforeAll(async () => {
     // 从 Directus 获取 RAG 测试用例
-    ragScenarios = await fetchTestCases('rag_scenarios'); // 替换为 Directus 中存储 RAG 测试用例的集合名称
+    ragScenarios = await fetchTestCases('rag_scenarios') ?? []; // 替换为 Directus 中存储 RAG 测试用例的集合名称
   });
 
-  for (const scenario of ragScenarios) {
-    test(scenario.name, async () => {
+  test('RAG 测试用例', async () => {
+    for (const scenario of ragScenarios) {
       // 获取第一个流程的响应
       const questionResponse = await request(flowServer)
         .post('/api/v1/prediction/' + scenario.input.flowid)
@@ -146,20 +146,21 @@ describe('测试RAG流程', () => {
       // 检查响应
       expect(verifyResponse.statusCode).toBe(200);
       expect(verifyResponse.body.text).toBe('y');
-    }, 0);
-  }
+    }
+  }, 0);
 });
 
 describe('测试敏感问题', () => {
-  let commonScenarios;
+  let commonScenarios: any[] = [];
 
   beforeAll(async () => {
     // 从 Directus 获取敏感问题测试用例
-    commonScenarios = await fetchTestCases('common_scenarios'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+    commonScenarios = await fetchTestCases('common_scenarios') ?? [];  // 替换为 Directus 中存储敏感问题测试用例的集合名称
+
   });
 
-  for (const scenario of commonScenarios) {
-    test(scenario.name, async () => {
+  test('敏感问题测试用例', async () => {
+    for (const scenario of commonScenarios) {
       // 获取第一个流程的响应
       const questionResponse = await request(flowServer)
         .post('/api/v1/prediction/' + scenario.input.flowid)
@@ -180,6 +181,6 @@ describe('测试敏感问题', () => {
       // 检查响应
       expect(verifyResponse.statusCode).toBe(200);
       expect(verifyResponse.body.text).toBe('y');
-    }, 0);
-  }
+    }
+  }, 0);
 });
