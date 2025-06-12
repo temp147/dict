@@ -1,0 +1,28 @@
+table: nb_treeholes
+
+columns:
+  id:
+    type: uuid
+    primary: true
+    nullable: false
+  title:
+    type: string
+    length: 256
+  send_time:
+    type: timestamp
+  emotion_type:
+    type: string
+  user_text:
+    type: text
+  aisuggestion:
+    type: text
+  tag:
+    type: json ## one of the deepth
+  reply_text:
+    type: text
+  mail_status:
+    type: string
+  user:
+    type: string
+
+

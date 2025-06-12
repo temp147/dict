@@ -71,6 +71,7 @@ import nutritionAnalyzeRouter from './controllers/nutritionanalyze.js';
 import documentsRouter from './controllers/documents.js';
 import ragsRouter from './controllers/rags.js';
 import testCasesRouter from './controllers/testcases.js';
+import treeHolesRouter from './controllers/treeholes.js';
 
 import {
 	isInstalled,
@@ -338,6 +339,7 @@ export default async function createApp(): Promise<express.Application> {
 	app.use('/items/nb_candidateresult', candidateResultRouter);
 	app.use('/items/nb_nutritionanalyze', nutritionAnalyzeRouter);
 	app.use('/items/nb_testcases', testCasesRouter);
+	app.use('/items/nb_treeholes', treeHolesRouter);
 
 	app.use('/dashboards', dashboardsRouter);
 	app.use('/extensions', extensionsRouter);
