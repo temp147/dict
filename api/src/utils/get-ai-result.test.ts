@@ -100,77 +100,43 @@ import axios from 'axios';
 
 const flowServer = 'http://localhost:3000';
 const directusServer = 'http://localhost:8080'; // 替换为你的 Directus 实例地址
-const directusUser = 'admin@example.com'; // 替换为你的 Directus API 访问令牌
-const userPassword = ''; // 替换为你的 Directus API 访问令牌
+// const directusUser = 'admin@example.com'; // 替换为你的 Directus API 访问令牌
+// const userPassword = ''; // 替换为你的 Directus API 访问令牌
+
+const token = 'ZFf6i7CPm1Vd3h8sHeXWRtes0Z_uceOk'
 
 
-const directusResponse   = await request(directusServer)
-        .post('/auth/login')
-        .send({ email: directusUser,password: userPassword });
+// const directusResponse   = await request(directusServer)
+//         .post('/auth/login')
+//         .send({ email: directusUser,password: userPassword });
 
-console.log(directusResponse.body.data.access_token) // eslint-disable-line no-console
+// console.log(directusResponse.body.data.access_token) // eslint-disable-line no-console
 
 // 从 Directus 获取测试用例
 async function fetchTestCases(collection: string, address: string) {
   const response = await axios.get(`${directusServer}/items/${collection}/${address}`, {
     headers: {
-      Authorization: `Bearer ${directusResponse.body.data.access_token}`,
+      // Authorization: `Bearer ${directusResponse.body.data.access_token}`,
+			Authorization: `Bearer ${token}`,
     },
   })
 
-	console.log(response.data.data) // eslint-disable-line no-console
+	// console.log(response.data.data) // eslint-disable-line no-console
 
   return response.data.data;
 }
 
 describe('测试RAG流程', async () => {
 
-  let ragScenarios: any[] = [];
-
-  beforeAll(async () => {
-    // 从 Directus 获取 RAG 测试用例
-    ragScenarios = await fetchTestCases('rag_scenarios', 'hq') ?? []; // 替换为 Directus 中存储 RAG 测试用例的集合名称
-  });
-
-  test('RAG 测试用例', async () => {
-    for (const scenario of ragScenarios) {
-      // 获取第一个流程的响应
-
-			// console.log(scenario.input.question);// eslint-disable-line no-console
-
-      const questionResponse = await request(flowServer)
-        .post('/api/v1/prediction/' + scenario.input_flowid)
-        .send({ question: scenario.input_question });
-
-      // console.log('scenario.check.verifyText'); // eslint-disable-line no-console
-
-      // 验证第二个流程的响应
-      const verifyResponse = await request(flowServer)
-        .post('/api/v1/prediction/' + scenario.verify_flowid)
-        .send({
-          question:
-            '第一段话' +
-            questionResponse.body.text +
-            scenario.verify_text,
-        });
-
-      // 检查响应
-      expect(verifyResponse.statusCode).toBe(200);
-      expect(verifyResponse.body.text).toBe('y');
-    }
-  }, 0);
-});
-
-describe('测试敏感问题', () => {
   let commonScenarios: any[] = [];
 
   beforeAll(async () => {
-    // 从 Directus 获取敏感问题测试用例
-    commonScenarios = await fetchTestCases('common_scenarios','sq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+    // 从 Directus 获取 RAG 测试用例
+    commonScenarios = await fetchTestCases('nb_testcases', 'hq') ?? []; // 替换为 Directus 中存储 RAG 测试用例的集合名称
   });
 
-  test('敏感问题测试用例', async () => {
-    for (const scenario of commonScenarios) {
+  for (const scenario of commonScenarios) {
+    test(scenario.name, async () => {
       // 获取第一个流程的响应
       const questionResponse = await request(flowServer)
         .post('/api/v1/prediction/' + scenario.input_flowid)
@@ -191,8 +157,42 @@ describe('测试敏感问题', () => {
       // 检查响应
       expect(verifyResponse.statusCode).toBe(200);
       expect(verifyResponse.body.text).toBe('y');
-    }
-  }, 0);
+    }, 0);
+  }
+});
+
+describe('测试敏感问题', () => {
+  let commonScenarios: any[] = [];
+
+  beforeAll(async () => {
+    // 从 Directus 获取敏感问题测试用例
+    commonScenarios = await fetchTestCases('nb_testcases','sq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+  });
+
+  for (const scenario of commonScenarios) {
+    test(scenario.name, async () => {
+      // 获取第一个流程的响应
+      const questionResponse = await request(flowServer)
+        .post('/api/v1/prediction/' + scenario.input_flowid)
+        .send({ question: scenario.input_question });
+
+      console.log('get response'); // eslint-disable-line no-console
+
+      // 验证第二个流程的响应
+      const verifyResponse = await request(flowServer)
+        .post('/api/v1/prediction/' + scenario.verify_flowid)
+        .send({
+          question:
+            '第一段话：' +
+            questionResponse.body.text +
+            scenario.verify_text,
+        });
+
+      // 检查响应
+      expect(verifyResponse.statusCode).toBe(200);
+      expect(verifyResponse.body.text).toBe('y');
+    }, 0);
+  }
 });
 
 describe('测试人设问题', async () => {
@@ -203,11 +203,11 @@ describe('测试人设问题', async () => {
   //   // 替换为 Directus 中存储敏感问题测试用例的集合名称
   // });
 
-	  let commonScenarios: any[] = [];
+	let commonScenarios: any[] = [];
 
   beforeAll(async () => {
     // 从 Directus 获取敏感问题测试用例
-    commonScenarios = await fetchTestCases('common_scenarios','pq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
+    commonScenarios = await fetchTestCases('nb_testcases','pq'); // 替换为 Directus 中存储敏感问题测试用例的集合名称
   });
 
   for (const scenario of commonScenarios) {
